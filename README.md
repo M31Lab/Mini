@@ -2,17 +2,23 @@
 
 # M31 Mini
 
-<img src="https://raw.githubusercontent.com/M31Lab/Mini/master/images/m31icon.png" alt="M31 Mini Logo" width="128" height="128">
+<img src="https://raw.githubusercontent.com/M31Lab/Mini/master/images/m31icon.png" alt="M31 Mini Logo" width="180" height="180">
 
 ### Production-grade AI coding assistant for VS Code
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=for-the-badge)](https://github.com/m31-team/m31-mini/releases)
-[![License: ISC](https://img.shields.io/badge/License-ISC-green.svg?style=for-the-badge)](LICENSE)
-[![VS Code Marketplace](https://img.shields.io/badge/VS%20Code-Marketplace-007ACC?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=m31-team.m31-mini)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=for-the-badge)](https://github.com/M31Lab/Mini/releases)
+[![License: ISC](https://img.shields.io/badge/License-MIT-yesllow.svg?style=for-the-badge)](LICENSE)
+[![VS Code Marketplace](https://img.shields.io/badge/VS%20Code-Marketplace-007ACC?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=m31lab.m31-mini)
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.9-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react)](https://reactjs.org/)
 
 </div>
+
+<div align="center">
+  <b>Transform your coding experience with AI-powered assistance</b>
+</div>
+
+<hr />
 
 ## 🚀 Features
 
@@ -25,7 +31,8 @@ Write, refactor, and improve your code in VS Code using AI. With M31 Mini, **you
 - ✨ **Real-time code suggestions** similar to GitHub Copilot as you type
 - 🎨 **Clean, intuitive UI** that integrates seamlessly with VS Code
 
-## 📋 M31 Production Ruleset
+<details open>
+<summary><h2>📋 M31 Production Ruleset</h2></summary>
 
 M31 Mini follows strict M31 production ruleset standards:
 
@@ -38,20 +45,35 @@ M31 Mini follows strict M31 production ruleset standards:
 | **Functional decomposition** | Smaller, testable units for better maintainability |
 
 This ensures high-quality, maintainable, and production-ready code.
+</details>
 
-## 📥 Installation
+<details open>
+<summary><h2>📥 Installation</h2></summary>
 
 ### VS Code Marketplace
 
-[![Install from VS Code Marketplace](https://img.shields.io/badge/Install-VS%20Code%20Marketplace-007ACC?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=m31-team.m31-mini)
+<p align="center">
+  <a href="https://marketplace.visualstudio.com/items?itemName=m31lab.m31-mini">
+    <img src="https://img.shields.io/badge/Install-VS%20Code%20Marketplace-007ACC?style=for-the-badge&logo=visual-studio-code" alt="Install from VS Code Marketplace">
+  </a>
+</p>
 
 Search for "M31 Mini" in the VS Code extension search.
 
+### Quick Installation
+
+Launch VS Code Quick Open (Ctrl+P), paste the following command, and press enter:
+```
+ext install m31lab.m31-mini
+```
+
 ### Manual Build
 
-Or build this extension yourself [(see Development section)](#-development).
+Or build this extension yourself [(see Development section)](#%EF%B8%8F-development).
+</details>
 
-## 📸 Screenshots
+<details open>
+<summary><h2>📸 Screenshots</h2></summary>
 
 <div align="center">
   <table>
@@ -89,10 +111,12 @@ Or build this extension yourself [(see Development section)](#-development).
     </tr>
   </table>
 </div>
+</details>
 
-## ✨ Real-time Code Suggestions
+<details open>
+<summary><h2>✨ Real-time Code Suggestions</h2></summary>
 
-M31 Mini now includes GitHub Copilot-like functionality that provides real-time code suggestions as you type:
+M31 Mini includes GitHub Copilot-like functionality that provides real-time code suggestions as you type:
 
 - **Inline suggestions**: See AI-generated code completions directly in your editor
 - **Ghost text**: Suggestions appear as ghost text that you can accept with Tab
@@ -103,8 +127,10 @@ To use this feature:
 1. Just start typing in a supported language file
 2. When a suggestion appears as ghost text, press Tab to accept it
 3. Configure behavior in Settings under "M31 Mini > Inline Suggestions"
+</details>
 
-## 🔌 Compatible AI Providers
+<details open>
+<summary><h2>🔌 Compatible AI Providers</h2></summary>
 
 Any tool that is "compatible" with the OpenAI API should work with this extension. The tools listed below are the ones we have personally tested.
 
@@ -127,12 +153,16 @@ Any tool that is "compatible" with the OpenAI API should work with this extensio
 ### Proxies
 
 We've set up a proxy for anyone that needs it at `https://openai-proxy.dev/v1`. It's running [x-dr/chatgptProxyAPI](https://github.com/x-dr/chatgptProxyAPI) code on CloudFlare Workers. This is mainly for anyone who wants to use OpenAI, but cannot due to api.openai.com being blocked in your region.
+</details>
 
-## 📝 Changelog
+<details>
+<summary><h2>📝 Changelog</h2></summary>
 
 See the [CHANGELOG](CHANGELOG.md) for a list of past updates and upcoming unreleased features.
+</details>
 
-## 🛠️ Development
+<details>
+<summary><h2>🛠️ Development</h2></summary>
 
 ### Prerequisites
 
@@ -143,20 +173,20 @@ See the [CHANGELOG](CHANGELOG.md) for a list of past updates and upcoming unrele
 ### Clone this repo
 
 ```bash
-git clone https://github.com/m31-team/m31-mini.git
-cd m31-mini
+git clone https://github.com/M31Lab/Mini.git
+cd Mini
 ```
 
 ### Setup
 
 ```bash
-yarn
+npm install
 ```
 
 ### Build the extension
 
 ```bash
-yarn run build
+vsce package
 ```
 
 ### Test new features in VS Code
@@ -178,8 +208,10 @@ To test the M31 Mini extension in VS Code:
 ```bash
 yarn run package # Runs `vsce package`
 ```
+</details>
 
-## 🧰 Tech Stack
+<details open>
+<summary><h2>🧰 Tech Stack</h2></summary>
 
 <div align="center">
 
@@ -194,15 +226,20 @@ yarn run package # Runs `vsce package`
 </div>
 
 This extension has a custom UI with React + TailwindCSS, but theme support and remaining consistent with VS Code's UI components is still a priority.
+</details>
 
-## 📄 License
+<details open>
+<summary><h2>📄 License</h2></summary>
 
 This project is licensed under the ISC License - see the [LICENSE](LICENSE) file for details.
+</details>
 
 ---
 
 <div align="center">
 
-Made with ❤️ by the [M31 Team](https://github.com/m31-team)
+<img src="https://raw.githubusercontent.com/M31Lab/Mini/master/images/m31icon.png" alt="M31 Mini Logo" width="60" height="60">
+
+Made with ❤️ by the [M31 Lab](https://github.com/M31Lab)
 
 </div>
