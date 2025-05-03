@@ -287,19 +287,20 @@ const QuestionInputField = ({
   };
 
   const renderThinkingState = (): React.ReactElement => (
-    <div className="flex flex-row items-center text-sm px-3 py-2 mb-1 rounded border bg-input text-input w-full">
-      <Icon
-        name={IconName.Wave}
-        className="w-5 h-5 mr-2 text stroke-current"
-      />
-      <span>{INPUT_STRINGS.THINKING}</span>
+    <div className="flex flex-row items-center text-xs px-2 py-2 rounded-sm text-gray-500 w-full">
+      <span className="mr-2">Thinking</span>
+      <span className="flex items-center">
+        <span className="w-1 h-1 bg-gray-400 rounded-full animate-pulse mx-0.5"></span>
+        <span className="w-1 h-1 bg-gray-400 rounded-full animate-pulse mx-0.5" style={{ animationDelay: "300ms" }}></span>
+        <span className="w-1 h-1 bg-gray-400 rounded-full animate-pulse mx-0.5" style={{ animationDelay: "600ms" }}></span>
+      </span>
       {isInstructModel(currentConversation.model) && (
-        <span className="text-xs opacity-50 ml-2">
+        <span className="text-[9px] opacity-50 ml-2">
           {INPUT_STRINGS.STREAMING_INSTRUCT}
         </span>
       )}
       {isReasoningModel(currentConversation.model) && (
-        <span className="text-xs opacity-50 ml-2">
+        <span className="text-[9px] opacity-50 ml-2">
           {INPUT_STRINGS.STREAMING_REASONING}
         </span>
       )}
@@ -309,7 +310,7 @@ const QuestionInputField = ({
   const renderQuestionInput = (): React.ReactElement => (
     <textarea
       rows={1}
-      className="text-sm p-2.5 rounded-lg text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 resize-none w-full outline-none placeholder-gray-400 dark:placeholder-gray-500 whitespace-pre-wrap font-mono"
+      className="text-sm p-2 rounded-sm text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 resize-none w-full outline-none placeholder-gray-400 dark:placeholder-gray-500 whitespace-pre-wrap font-mono"
       id="question-input"
       placeholder={INPUT_STRINGS.ASK_QUESTION}
       ref={questionInputRef}
@@ -323,11 +324,11 @@ const QuestionInputField = ({
   const renderStopButton = (): React.ReactElement => (
     <button
       title="Stop generation"
-      className="px-3 py-2 h-full flex flex-row items-center gap-1.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700 rounded-lg hover:bg-red-200 dark:hover:bg-red-800/30 focus:ring-2 focus:ring-red-500/20 transition-colors duration-200"
+      className="px-2 py-1 h-full flex flex-row items-center gap-1 bg-transparent text-gray-600 dark:text-gray-300 hover:bg-button-hover/10 rounded-sm transition-colors"
       onClick={handleStopGeneration}
     >
       <Icon name={IconName.Cancel} className="w-4 h-4" />
-      <span className="font-medium">{INPUT_STRINGS.STOP}</span>
+      <span className="text-sm">{INPUT_STRINGS.STOP}</span>
     </button>
   );
 
@@ -335,7 +336,7 @@ const QuestionInputField = ({
     <button
       title="Submit prompt"
       className={classNames(
-        "ask-button rounded-lg px-4 py-2 flex flex-row items-center gap-1.5 text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 focus:ring-2 focus:ring-blue-500/50 shadow-sm transition-all duration-200",
+        "ask-button rounded-sm px-2 py-1 flex flex-row items-center gap-1 text-gray-600 dark:text-gray-300 bg-transparent hover:bg-button-hover/10 transition-colors",
         {
           "opacity-50 cursor-not-allowed": !isCurrentModelAvailable,
         }
@@ -348,7 +349,7 @@ const QuestionInputField = ({
       {isCurrentModelAvailable
         ? INPUT_STRINGS.ASK
         : INPUT_STRINGS.SELECT_MODEL_FIRST}
-      <Icon name={IconName.Send} className="w-5 h-5 ml-1 hidden 2xs:block" />
+      <Icon name={IconName.Send} className="w-4 h-4 ml-1 hidden 2xs:block" />
     </button>
   );
 
@@ -389,15 +390,7 @@ const QuestionInputField = ({
 
   const renderTokenCounter = (): React.ReactElement => (
     <div
-      className={`rounded flex gap-1 items-end justify-start py-1 px-2 w-full text-[10px] whitespace-nowrap hover:bg-button-secondary focus:bg-button-secondary hover:text-button-secondary focus:text-button-secondary transition-bg ${tokenCountAnimation
-        ? "duration-200 bg-blue-300 bg-opacity-20"
-        : "duration-500"
-        }
-      ${isTokenCountExceedingLimit()
-          ? "duration-200 bg-red-700 bg-opacity-20"
-          : ""
-        }
-    `}
+      className={`rounded flex gap-1 items-center text-[9px] px-1 py-0.5 text-gray-500 hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] rounded-sm transition-colors`}
       ref={tokenCountRef}
       tabIndex={0}
       onMouseEnter={handleTokenCountMouseEnter}
@@ -406,8 +399,7 @@ const QuestionInputField = ({
       onBlur={handleTokenCountMouseLeave}
       onKeyUp={handleTokenCountKeyUp}
     >
-      {"≤ $"}
-      {maxCost?.toFixed(2) ?? "???"}
+      <span className={isTokenCountExceedingLimit() ? "text-red-500" : ""}>≤ ${maxCost?.toFixed(2) ?? "???"}</span>
       <TokenCountPopup
         showTokenBreakdown={showTokenBreakdown}
         currentConversation={currentConversation}
@@ -420,43 +412,36 @@ const QuestionInputField = ({
 
   const renderMoreActionsButton = (): React.ReactElement => (
     <button
-      className="rounded flex gap-1 items-center justify-start py-0.5 px-1 w-full whitespace-nowrap hover:bg-button-secondary focus:bg-button-secondary hover:text-button-secondary focus:text-button-secondary"
+      className="text-[9px] px-1 py-0.5 flex gap-1 items-center justify-start whitespace-nowrap hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] rounded-sm text-gray-500 transition-colors"
       onClick={handleMoreActionsToggle}
       onKeyUp={handleMoreActionsKeyUp}
     >
-      <Icon name={IconName.Zap} className="w-3.5 h-3.5 hidden 2xs:block" />
+      <Icon name={IconName.Zap} className="w-3 h-3 hidden 2xs:block" />
       {INPUT_STRINGS.MORE_ACTIONS}
     </button>
   );
 
   return (
     <footer
-      className={`fixed z-20 bottom-0 w-full flex flex-col gap-y-2 pt-4 pb-6
-        bg-gradient-to-t from-white via-white/98 to-white/80 dark:from-gray-900 dark:via-gray-900/98 dark:to-gray-900/80
-        backdrop-blur-md
-        ${settings?.minimalUI ? "pb-6" : "pb-6"}
+      className={`fixed z-20 bottom-0 w-full flex flex-col gap-y-1 pt-1 pb-2
+        bg-sidebar border-t border-tab-inactive/30
+        ${settings?.minimalUI ? "pb-2" : "pb-2"}
       `}
     >
-      <div className="max-w-5xl mx-auto w-full px-6 relative">
-        <div className="absolute top-0 left-10 right-10 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent"></div>
-
+      <div className="max-w-5xl mx-auto w-full px-2 relative">
         <div className="relative">
-          <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl blur-md"></div>
-          <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+          <div className="relative bg-input rounded-sm border border-tab-inactive/30 overflow-hidden">
             <div className="flex items-stretch">
-              <div className="bg flex-1 textarea-wrapper w-full flex items-center rounded-l-xl overflow-hidden transition-all duration-200">
+              <div className="bg flex-1 textarea-wrapper w-full flex items-center overflow-hidden transition-all">
                 {currentConversation.inProgress ? renderThinkingState() : renderQuestionInput()}
               </div>
 
               <div className="flex items-center">
-                <div className="h-8 w-px bg-gradient-to-b from-transparent via-gray-300 dark:via-gray-700 to-transparent mx-0.5"></div>
-                <div className="m-1.5" id="question-input-buttons">
+                <div className="h-5 w-px bg-tab-inactive/30 mx-0.5"></div>
+                <div className="m-0.5" id="question-input-buttons">
                   {currentConversation.inProgress ?
                     renderStopButton() :
-                    <div className="relative group transition-all duration-200">
-                      <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg blur opacity-10 group-hover:opacity-30 transition-all duration-300"></div>
-                      {renderAskButton()}
-                    </div>
+                    renderAskButton()
                   }
                 </div>
               </div>

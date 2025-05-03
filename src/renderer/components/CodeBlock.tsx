@@ -50,14 +50,14 @@ interface CodeBlockProps {
 
 /**
  * Component for displaying code blocks with syntax highlighting and actions
- * 
+ *
  * Features:
  * - Syntax highlighting
  * - Copy to clipboard
  * - Insert into current file
  * - Create new file
  * - Expand/collapse for large code blocks
- * 
+ *
  * @param props - Component properties
  * @returns React component
  */
@@ -139,18 +139,18 @@ const CodeBlock = ({
 
   // Compute class names for the code block container
   const containerClasses = classNames(
-    "c-codeblock group/codeblock bg-input relative rounded border bg-opacity-20",
+    "c-codeblock group/codeblock bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] relative rounded-sm border border-tab-inactive/30",
     className,
     {
-      "my-4": margins,
+      "my-2": margins,
     }
   );
 
   // Compute class names for the code element
-  const codeClasses = classNames("block px-4 py-2 font-code text-code", {
+  const codeClasses = classNames("block px-3 py-1.5 font-code text-code text-sm", {
     "h-14 collapsed-code-block overflow-hidden": !expanded,
     "overflow-x-auto": expanded,
-    "bg-sidebar": role === Role.user,
+    "bg-[rgba(0,0,0,0.01)] dark:bg-[rgba(255,255,255,0.01)]": role === Role.user,
   });
 
   // Clean HTML content for the code element
@@ -162,15 +162,15 @@ const CodeBlock = ({
     <pre className={containerClasses}>
       {/* Language indicator */}
       {language && (
-        <div className="absolute -top-5 right-4 text-[10px] text-tab-inactive-unfocused">
+        <div className="absolute -top-4 right-2 text-[9px] text-tab-inactive-unfocused">
           {language}
         </div>
       )}
 
       {/* Action buttons when expanded */}
       {expanded && (
-        <div className="sticky h-0 z-10 top-0 -mt-[1px] pr-2 border-t">
-          <div className="pt-1 flex flex-wrap items-center justify-end gap-2 transition-opacity duration-75 opacity-0 pointer-events-none group-hover/codeblock:opacity-100 group-focus-within/codeblock:opacity-100">
+        <div className="sticky h-0 z-10 top-0 pr-1 border-t border-tab-inactive/10">
+          <div className="pt-0.5 flex flex-wrap items-center justify-end gap-1 transition-opacity duration-75 opacity-0 pointer-events-none group-hover/codeblock:opacity-100 group-focus-within/codeblock:opacity-100">
             {/* Copy button */}
             <CodeBlockActionsButton
               vscode={vscode}
@@ -218,10 +218,10 @@ const CodeBlock = ({
 
       {/* Expand button when collapsed */}
       {!expanded && (
-        <div className="pointer-events-none opacity-0 group-hover/codeblock:opacity-100 absolute inset-0 p-2 flex items-end justify-center">
-          <div className="pointer-events-auto bg-input rounded">
+        <div className="pointer-events-none opacity-0 group-hover/codeblock:opacity-100 absolute inset-0 p-1 flex items-end justify-center">
+          <div className="pointer-events-auto">
             <button
-              className="flex gap-x-1 pt-1.5 pb-1 px-2 text-xs rounded bg-button-secondary text-button-secondary hover:bg-button-secondary-hover hover:text-button-secondary-hover whitespace-nowrap"
+              className="flex gap-x-1 px-2 py-0.5 text-[9px] rounded-sm bg-[rgba(0,0,0,0.05)] dark:bg-[rgba(255,255,255,0.05)] text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.1)] dark:hover:bg-[rgba(255,255,255,0.1)] whitespace-nowrap"
               onClick={toggleExpanded}
               aria-label={CODEBLOCK_STRINGS.expand}
             >
@@ -233,10 +233,10 @@ const CodeBlock = ({
 
       {/* Collapse button when expanded (only for blocks that started collapsed) */}
       {startCollapsed && expanded && (
-        <div className="pointer-events-none opacity-0 group-hover/codeblock:opacity-100 absolute inset-0 p-2 flex items-end justify-center">
-          <div className="pointer-events-auto bg-input rounded">
+        <div className="pointer-events-none opacity-0 group-hover/codeblock:opacity-100 absolute inset-0 p-1 flex items-end justify-center">
+          <div className="pointer-events-auto">
             <button
-              className="flex gap-x-1 top-0 right-0 pt-1.5 pb-1 px-2 text-xs rounded bg-button-secondary text-button-secondary hover:bg-button-secondary-hover hover:text-button-secondary-hover whitespace-nowrap"
+              className="flex gap-x-1 px-2 py-0.5 text-[9px] rounded-sm bg-[rgba(0,0,0,0.05)] dark:bg-[rgba(255,255,255,0.05)] text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.1)] dark:hover:bg-[rgba(255,255,255,0.1)] whitespace-nowrap"
               onClick={toggleExpanded}
               aria-label={CODEBLOCK_STRINGS.collapse}
             >

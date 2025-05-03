@@ -67,17 +67,17 @@ export interface AppState {
  * Default view options
  */
 const defaultViewOptions: ViewOptionsState = {
-  hideName: false,
+  hideName: true,
   showCodeOnly: false,
-  showMarkdown: false,
+  showMarkdown: true,
   alignRight: false,
-  showCompact: false,
+  showCompact: true,
   showNetworkLogs: false,
-  showEditorSelection: true,
-  showClear: true,
-  showVerbosity: true,
+  showEditorSelection: false,
+  showClear: false,
+  showVerbosity: false,
   showModelSelect: true,
-  showTokenCount: true
+  showTokenCount: false
 };
 
 /**

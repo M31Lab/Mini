@@ -18,15 +18,14 @@ const currentViewOptions: ViewOption[] = [
   { label: "Code Only", key: "showCodeOnly" },
   { label: "Show Markdown", key: "showMarkdown" },
   { label: "Align Right", key: "alignRight" },
-  // Not yet implemented
-  // { label: "Compact UI", key: "showCompact" },
+  { label: "Compact UI", key: "showCompact" },
   // Not yet implemented
   // { label: "Network Logs", key: "showNetworkLogs" },
 ];
 
 const userUIOptions: ViewOption[] = [
-  { label: "Model Select Button", key: "showModelSelect" },
-  { label: "Verbosity Button", key: "showVerbosity" },
+  { label: "Model Select", key: "showModelSelect" },
+  { label: "Verbosity", key: "showVerbosity" },
   { label: "Editor Selection", key: "showEditorSelection" },
   { label: "Clear Button", key: "showClear" },
   { label: "Token Count", key: "showTokenCount" },
@@ -45,7 +44,7 @@ const ViewOptionsToggle = ({
   const renderOptionButton = (option: ViewOption): ReactElement => (
     <li key={option.key}>
       <button
-        className="w-full flex gap-1 items-center py-0.5 px-1 whitespace-nowrap rounded hover:bg-button-secondary focus:bg-button-secondary focus:underline hover:text-button-secondary focus:text-button-secondary"
+        className="w-full flex gap-1 items-center py-0.5 px-1 text-xs whitespace-nowrap hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] rounded-sm"
         onClick={() => handleOptionToggle(option.key)}
       >
         <Icon
@@ -65,19 +64,16 @@ const ViewOptionsToggle = ({
     <div
       className={classNames(
         "ViewOptionsToggle",
-        "z-20 p-2 bg-menu rounded border border-menu",
+        "z-20 p-1 bg-menu rounded-sm border border-tab-inactive/30 shadow-sm",
         className
       )}
       onClick={preventPropagation}
     >
-      <header>
-        <p className="mb-1 text-xs text-gray-500">Modify the chat UI.</p>
-      </header>
-      <div className="flex gap-4">
-        <ul className="flex-1 flex flex-col gap-1">
+      <div className="flex gap-2">
+        <ul className="flex-1 flex flex-col gap-0.5">
           {currentViewOptions.map(renderOptionButton)}
         </ul>
-        <ul className="flex-1 flex flex-col gap-1">
+        <ul className="flex-1 flex flex-col gap-0.5">
           {userUIOptions.map(renderOptionButton)}
         </ul>
       </div>

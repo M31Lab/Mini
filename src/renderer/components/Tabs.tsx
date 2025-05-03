@@ -21,7 +21,7 @@ function TabCloseButton({
   return (
     <button
       className={classNames(
-        "ml-2 p-0.5 group-hover:opacity-100 group-focus-within:opacity-100 focus:outline-none hover:bg-opacity-40 hover:bg-button-secondary hover:text-button-secondary focus:bg-button-secondary focus:text-button-secondary rounded",
+        "ml-1 p-0.5 group-hover:opacity-100 group-focus-within:opacity-100 focus:outline-none hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] rounded-sm",
         location.pathname === path ? "opacity-100" : "opacity-0"
       )}
       onClick={(e) => {
@@ -30,7 +30,7 @@ function TabCloseButton({
         onClick(e);
       }}
     >
-      <Icon name={IconName.Close} className="w-4 h-4" />
+      <Icon name={IconName.Close} className="w-3 h-3" />
       <span className="sr-only">Close tab</span>
     </button>
   );
@@ -43,7 +43,7 @@ function TabLink({
   currentConversation,
   createNewConversation,
 }: {
-  tab: { name: string; id: string; href: string };
+  tab: { name: string; id: string; href: string; };
   conversationList: Conversation[];
   currentConversation: Conversation;
   createNewConversation: any;
@@ -56,10 +56,10 @@ function TabLink({
     <li key={tab.id}>
       <Link
         className={classNames(
-          "border-t h-full flex items-center group whitespace-nowrap text-2xs focus:outline-none focus:underline",
+          "h-full flex items-center group whitespace-nowrap text-[9px] focus:outline-none focus:underline",
           location.pathname === `/chat/${encodeURI(tab.id)}`
-            ? "border-t-tab-editor-focus bg-tab-active focus-within:bg-tab-active"
-            : "border-t-tab-inactive bg-tab-inactive hover:bg-tab-selection focus-within:bg-tab-selection"
+            ? "bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] focus-within:bg-[rgba(0,0,0,0.03)] dark:focus-within:bg-[rgba(255,255,255,0.03)]"
+            : "bg-transparent hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] focus-within:bg-[rgba(0,0,0,0.02)] dark:focus-within:bg-[rgba(255,255,255,0.02)]"
         )}
         to={tab.href}
         aria-current={
@@ -72,8 +72,8 @@ function TabLink({
           className={classNames(
             "flex items-center gap-x-1 py-1 pl-2 pr-1",
             location.pathname === `/chat/${encodeURI(tab.id)}`
-              ? "text-tab-active hover:text-tab-active focus-within:text-tab-active"
-              : "hover:text-tab-inactive text-tab-active-unfocused focus-within:text-tab-inactive"
+              ? "text-gray-800 dark:text-gray-200 hover:text-gray-800 dark:hover:text-gray-200 focus-within:text-gray-800 dark:focus-within:text-gray-200"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus-within:text-gray-600 dark:focus-within:text-gray-300"
           )}
         >
           <span className="pt-0.5">{tab.name}</span>
@@ -226,7 +226,7 @@ export default function Tabs({
         <label htmlFor="tabs" className="sr-only">
           Select a tab
         </label>
-        <div className="flex flex-row divide-x divide-tab border-b border-tab">
+        <div className="flex flex-row divide-x divide-tab-inactive/20 border-b border-tab-inactive/30">
           <TabsDropdown
             tabs={tabs}
             currentConversation={currentConversation}
@@ -237,30 +237,30 @@ export default function Tabs({
           />
           {/* button for new chat */}
           <button
-            className="flex gap-x-2 items-center bg-button-secondary text-button-secondary hover:bg-button-secondary-hover hover:text-button-secondary-hover whitespace-nowrap p-2 pr-3 text-2xs"
+            className="flex gap-x-1 items-center bg-transparent text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] whitespace-nowrap p-1 pr-2 text-[9px]"
             onClick={createNewConversation}
           >
-            <Icon name={IconName.Plus} className="w-4 h-4" />
+            <Icon name={IconName.Plus} className="w-3 h-3" />
             New
           </button>
         </div>
       </div>
       {/* Wider tab layout */}
       <div className={`${tabs.length > 5 ? "hidden" : "hidden 2xs:block"}`}>
-        <nav className="flex justify-between border-b border-tab">
+        <nav className="flex justify-between border-b border-tab-inactive/30">
           <ul
             ref={tabListRef}
-            className="flex overflow-x-auto divide-x divide-tab"
+            className="flex overflow-x-auto divide-x divide-tab-inactive/20"
             aria-label="Tabs"
           >
             {/* /api */}
             <li>
               <Link
                 className={classNames(
-                  "border-t h-full flex items-center gap-x-1 py-1 pl-2 pr-1 group whitespace-nowrap text-2xs focus:outline-none",
+                  "h-full flex items-center gap-x-1 py-1 pl-2 pr-1 group whitespace-nowrap text-[9px] focus:outline-none",
                   location.pathname === "/api"
-                    ? "border-t-tab-editor-focus bg-tab-active text-tab-active hover:text-tab-active focus-within:text-tab-active focus-within:bg-tab-active"
-                    : "border-t-tab-inactive bg-tab-inactive hover:bg-tab-selection hover:text-tab-inactive text-tab-active-unfocused focus-within:text-tab-inactive focus-within:bg-tab-selection",
+                    ? "bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] text-gray-800 dark:text-gray-200 hover:text-gray-800 dark:hover:text-gray-200 focus-within:text-gray-800 dark:focus-within:text-gray-200 focus-within:bg-[rgba(0,0,0,0.03)] dark:focus-within:bg-[rgba(255,255,255,0.03)]"
+                    : "bg-transparent hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] hover:text-gray-600 dark:hover:text-gray-300 text-gray-500 dark:text-gray-400 focus-within:text-gray-600 dark:focus-within:text-gray-300 focus-within:bg-[rgba(0,0,0,0.02)] dark:focus-within:bg-[rgba(255,255,255,0.02)]",
                   {
                     hidden: !showLocalLlmTab,
                   }
@@ -292,10 +292,10 @@ export default function Tabs({
             <li>
               <Link
                 className={classNames(
-                  "border-t h-full flex items-center gap-x-1 py-1 pl-2 pr-1 group whitespace-nowrap text-2xs focus:outline-none",
+                  "h-full flex items-center gap-x-1 py-1 pl-2 pr-1 group whitespace-nowrap text-[9px] focus:outline-none",
                   location.pathname === "/actions"
-                    ? "border-t-tab-editor-focus bg-tab-active text-tab-active hover:text-tab-active focus-within:text-tab-active focus-within:bg-tab-active"
-                    : "border-t-tab-inactive bg-tab-inactive hover:bg-tab-selection hover:text-tab-inactive text-tab-active-unfocused focus-within:text-tab-inactive focus-within:bg-tab-selection",
+                    ? "bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] text-gray-800 dark:text-gray-200 hover:text-gray-800 dark:hover:text-gray-200 focus-within:text-gray-800 dark:focus-within:text-gray-200 focus-within:bg-[rgba(0,0,0,0.03)] dark:focus-within:bg-[rgba(255,255,255,0.03)]"
+                    : "bg-transparent hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] hover:text-gray-600 dark:hover:text-gray-300 text-gray-500 dark:text-gray-400 focus-within:text-gray-600 dark:focus-within:text-gray-300 focus-within:bg-[rgba(0,0,0,0.02)] dark:focus-within:bg-[rgba(255,255,255,0.02)]",
                   {
                     hidden: !showActionsTab,
                   }
@@ -337,10 +337,10 @@ export default function Tabs({
             {/* create new chat button */}
             <li className="flex items-center sticky right-0">
               <button
-                className="flex gap-x-1 bg-button-secondary text-button-secondary whitespace-nowrap py-2 pl-2 pr-3 text-2xs hover:bg-button-secondary-hover hover:text-button-secondary-hover focus:outline-none focus:bg-button-secondary-hover focus:text-button-secondary-hover"
+                className="flex gap-x-1 bg-transparent text-gray-600 dark:text-gray-300 whitespace-nowrap py-1 pl-2 pr-2 text-[9px] hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] focus:outline-none"
                 onClick={createNewConversation}
               >
-                <Icon name={IconName.Plus} className="w-4 h-4" />
+                <Icon name={IconName.Plus} className="w-3 h-3" />
                 New
               </button>
             </li>

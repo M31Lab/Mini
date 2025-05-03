@@ -30,7 +30,7 @@ interface CodeBlockActionsButtonProps {
 /**
  * Button component for code block actions like copy, insert, etc.
  * Shows a success state after the action is performed.
- * 
+ *
  * @param props - Component properties
  * @returns React component
  */
@@ -68,16 +68,21 @@ const CodeBlockActionsButton = ({
 
   // Determine button classes based on current state
   const buttonClasses = `
-    code-element-ext 
-    px-1 py-0.5 
-    flex gap-x-1 
-    justify-center 
-    items-center 
-    rounded 
-    border 
+    code-element-ext
+    px-1 py-0.5
+    flex gap-x-1
+    justify-center
+    items-center
+    rounded-sm
+    text-[9px]
     pointer-events-auto
-    bg-menu 
-    hover:bg-menu-selection
+    bg-[rgba(0,0,0,0.03)]
+    dark:bg-[rgba(255,255,255,0.03)]
+    hover:bg-[rgba(0,0,0,0.07)]
+    dark:hover:bg-[rgba(255,255,255,0.07)]
+    text-gray-600
+    dark:text-gray-300
+    border border-tab-inactive/30
     ${showSuccess ? "text-green-500 border-green-500" : ""}
   `.trim().replace(/\s+/g, ' ');
 
@@ -91,13 +96,13 @@ const CodeBlockActionsButton = ({
     >
       {showSuccess ? (
         <>
-          <Icon name={IconName.Check} className="w-4 h-4" />
-          <span className="mt-0.5 mr-0.5">{buttonSuccessText}</span>
+          <Icon name={IconName.Check} className="w-3 h-3" />
+          <span>{buttonSuccessText}</span>
         </>
       ) : (
         <>
-          {iconName && <Icon name={IconName[iconName as keyof typeof IconName]} className="w-4 h-4" />}
-          <span className="mt-0.5 mr-0.5">{buttonText}</span>
+          {iconName && <Icon name={IconName[iconName as keyof typeof IconName]} className="w-3 h-3" />}
+          <span>{buttonText}</span>
         </>
       )}
     </button>

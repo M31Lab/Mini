@@ -478,46 +478,20 @@ const Name = ({
   const displayName = isUserMessage ? CHAT_STRINGS.you : (modelFriendlyName ?? "ChatGPT");
   const iconName = isUserMessage ? "user" : "box";
 
-  // Enhanced avatar styles with gradients and better visual treatment
-  const avatarClasses = isUserMessage
-    ? "bg-gradient-to-br from-blue-400 to-indigo-500 text-white dark:from-blue-500 dark:to-indigo-600"
-    : "bg-gradient-to-br from-purple-400 to-pink-500 text-white dark:from-purple-500 dark:to-pink-600";
-
   return (
     <h2
-      className={classNames("flex-grow flex items-center gap-3", {
+      className={classNames("flex-grow flex items-center gap-1", {
         "flex-row-reverse": isUserMessage && alignRight,
       })}
     >
-      {/* Avatar with enhanced styling */}
-      <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-br from-blue-400 to-purple-600 rounded-full opacity-20 group-hover:opacity-40 blur-sm transition-all duration-300"></div>
-        <div className={`${avatarClasses} p-2 rounded-full flex items-center justify-center shadow-sm relative z-10`}>
-          <Icon name={IconName[iconName as keyof typeof IconName]} className="w-4 h-4" />
-        </div>
+      <div className="text-xs text-gray-500">
+        {isUserMessage ? "You" : "AI"}
       </div>
 
-      {/* Name with more styled typography */}
-      <div className="flex flex-col">
-        <span className={`font-semibold text-sm ${isUserMessage ? "text-blue-700 dark:text-blue-300" : "text-purple-700 dark:text-purple-300"}`}>
-          {displayName}
-        </span>
-
-        {/* Subtle timestamp */}
-        <span className="text-xs text-gray-400">
-          {new Date(message?.createdAt ?? "").toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-        </span>
-      </div>
-
-      {/* Enhanced typing indicator when message is not done */}
+      {/* Simple typing indicator */}
       {!message.done && !isUserMessage && (
-        <div className="flex items-center gap-1 ml-2 px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-800">
-          <span className="text-xs text-gray-500 dark:text-gray-400 mr-1">Typing</span>
-          <span className="flex gap-1">
-            <span className="inline-block w-1.5 h-1.5 bg-purple-500 dark:bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
-            <span className="inline-block w-1.5 h-1.5 bg-fuchsia-500 dark:bg-fuchsia-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
-            <span className="inline-block w-1.5 h-1.5 bg-pink-500 dark:bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
-          </span>
+        <div className="flex items-center ml-1">
+          <span className="text-[9px] text-gray-400">typing...</span>
         </div>
       )}
     </h2>
@@ -553,36 +527,22 @@ const ChatMessage: React.FC<MessageComponentProps> = ({
   // Determine if this is a user message
   const isUserMessage = message.role === Role.user;
 
-  // Determine background color based on message role
-  const bgColorClass = isUserMessage ? "bg-input" : "bg-sidebar";
-
   return (
     <div
-      className={`group/chat-message w-full flex flex-col gap-y-4 self-end question-element-ext relative
+      className={`group/chat-message w-full flex flex-col gap-y-1 self-end relative
         ${isUserMessage
-          ? "pl-4 pr-5 py-4 ml-6 md:ml-10 mr-2 md:mr-4 bg-gradient-to-br from-blue-50 via-blue-50 to-indigo-50 dark:from-blue-900/40 dark:via-blue-900/20 dark:to-indigo-900/30 border-l-4 border-blue-400 dark:border-blue-600"
-          : "pl-4 pr-5 py-4 mr-6 md:mr-10 ml-2 md:ml-4 bg-gradient-to-br from-purple-50 via-fuchsia-50 to-pink-50 dark:from-purple-900/40 dark:via-fuchsia-900/20 dark:to-pink-900/30 border-l-4 border-purple-400 dark:border-purple-600"
+          ? "pl-2 pr-2 py-1 ml-0 mr-0 bg-[rgba(0,0,0,0.05)] dark:bg-[rgba(255,255,255,0.05)]"
+          : "pl-2 pr-2 py-1 ml-0 mr-0"
         }
-        rounded-lg shadow-sm my-4 transition-all duration-300
-        hover:shadow-md hover:translate-x-0
-        ${isUserMessage ? "hover:-translate-x-1" : "hover:translate-x-1"}`}
+        my-1`}
       key={message.id}
     >
-      {/* Position indicator triangles */}
-      <div className={`absolute top-4
-        ${isUserMessage
-          ? "right-full mr-1 border-r-blue-50 dark:border-r-blue-900/40"
-          : "left-full ml-1 border-l-purple-50 dark:border-l-purple-900/40"
-        }
-        border-solid border-8 border-transparent`}>
-      </div>
-
       {/* Header section with name and options */}
       {hideName ? (
         // Minimal header when names are hidden
         isUserMessage && (
           <ChatMessageOptions
-            className="absolute top-2 right-2 opacity-0 group-hover/chat-message:opacity-100 group-focus-within/chat-message:opacity-100 transition-opacity duration-200"
+            className="absolute top-1 right-1 opacity-0 group-hover/chat-message:opacity-100 transition-opacity"
             message={message}
             conversation={conversation}
             index={index}
@@ -595,7 +555,7 @@ const ChatMessage: React.FC<MessageComponentProps> = ({
       ) : (
         // Full header with name and options
         <header
-          className={classNames("flex items-center gap-2 pb-2 border-b border-gray-200 dark:border-gray-700", {
+          className={classNames("flex items-center gap-2", {
             "flex-row-reverse": isUserMessage && alignRight,
           })}
         >
@@ -603,7 +563,7 @@ const ChatMessage: React.FC<MessageComponentProps> = ({
 
           {isUserMessage && (
             <ChatMessageOptions
-              className="opacity-0 group-hover/chat-message:opacity-100 group-focus-within/chat-message:opacity-100 transition-opacity duration-200"
+              className="opacity-0 group-hover/chat-message:opacity-100 transition-opacity"
               message={message}
               conversation={conversation}
               index={index}
@@ -618,11 +578,11 @@ const ChatMessage: React.FC<MessageComponentProps> = ({
 
       {/* Message content */}
       {message.isError ? (
-        <div className="animate-pulse">
+        <div>
           <ErrorMessageComponent message={message} />
         </div>
       ) : (
-        <div className={`${message?.done ? "" : "animate-pulse"}`}>
+        <div className="px-1">
           <MessageBodyComponent
             message={message}
             conversation={conversation}
@@ -633,15 +593,15 @@ const ChatMessage: React.FC<MessageComponentProps> = ({
 
           {/* Debug information if enabled */}
           {(debug || networkLogs) && (
-            <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-700">
+            <div className="mt-1 pt-1 border-t border-gray-200 dark:border-gray-700">
               <DebugMessageComponent message={message} />
             </div>
           )}
         </div>
       )}
 
-      {/* Timestamp indicator */}
-      <div className="absolute bottom-1 right-2 text-[10px] text-gray-400 opacity-0 group-hover/chat-message:opacity-100 transition-opacity duration-200">
+      {/* Simple timestamp indicator */}
+      <div className="text-right text-[9px] text-gray-400 opacity-0 group-hover/chat-message:opacity-100 transition-opacity">
         {new Date(message?.createdAt ?? "").toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
       </div>
     </div>
