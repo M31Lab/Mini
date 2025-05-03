@@ -294,7 +294,7 @@ const QuestionInputField = ({
   const renderThinkingState = (): React.ReactElement => (
     <div className="flex flex-row items-center text-sm px-3 py-2 mb-1 rounded border bg-input text-input w-full">
       <Icon
-        name={IconName.Ripples}
+        name={IconName.Wave}
         className="w-5 h-5 mr-2 text stroke-current"
       />
       <span>{INPUT_STRINGS.THINKING}</span>

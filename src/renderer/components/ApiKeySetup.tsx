@@ -303,7 +303,7 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
         {isPending() ? (
           <span className="flex items-center gap-2">
             <span>{API_STRINGS.BUTTONS.SETTING_API_KEY}</span>
-            <Icon name={IconName.Ripples} className="w-4 h-4 ml-2" />
+            <Icon name={IconName.Wave} className="w-4 h-4 ml-2" />
           </span>
         ) : (
           <span>{API_STRINGS.BUTTONS.SET_API_KEY}</span>

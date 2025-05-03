@@ -85,7 +85,7 @@ const ActionItem = ({
             {isRunning ? (
               <div className="flex gap-x-2">
                 <div className="flex items-center justify-center text-blue-500">
-                  <Icon name={IconName.Ripple} className="animate-spin h-4 w-4" />
+                  <Icon name={IconName.Refresh} className="animate-spin h-4 w-4" />
                 </div>
                 Stop
               </div>
