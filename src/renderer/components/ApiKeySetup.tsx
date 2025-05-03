@@ -290,7 +290,7 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
           htmlFor="api-url"
           className="block text-[12px] font-medium text-gray-700 dark:text-gray-300 flex items-center"
         >
-          <Icon name={IconName.Settings} className="w-3 h-3 mr-1.5 text-gray-500 dark:text-gray-400" />
+          <Icon name={IconName.Box} className="w-3 h-3 mr-1.5 text-gray-500 dark:text-gray-400" />
           {API_STRINGS.ALT_API_URL.LABEL}
         </label>
         <div className="mt-1">
