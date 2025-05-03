@@ -61,7 +61,7 @@ const TabsDropdown = ({
       const nextTabId = conversationList[0].id === currentConversation.id
         ? conversationList[1].id
         : conversationList[0].id;
-      
+
       navigate(`/chat/${encodeURI(nextTabId)}`);
     }
 
@@ -75,25 +75,25 @@ const TabsDropdown = ({
   return (
     <div className={`relative ${className}`} ref={parentRef}>
       <button
-        className="flex-grow w-full flex items-center px-2 py-1 border-b border-menu text-xs cursor-pointer hover:bg-menu-selection focus:outline-none focus:ring-tab-active"
+        className="flex-grow w-full flex items-center px-2 py-1 border-b border-tab-inactive/30 text-[9px] cursor-pointer hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] focus:outline-none"
         onClick={handleToggleOptions}
         ref={selectRef}
       >
-        <span className="pl-1 flex-grow user-select-none text-start">
+        <span className="pl-1 flex-grow user-select-none text-start text-gray-700 dark:text-gray-300">
           {currentTabName}
         </span>
-        <Icon name={IconName.CaretDown} className="w-6 h-6 p-1" />
+        <Icon name={IconName.CaretDown} className="w-4 h-4 p-1 text-gray-500" />
         <button
           type="button"
-          className="block p-1 hover:text-white focus:outline-none hover:bg-opacity-40 hover:bg-button-secondary focus:bg-button-secondary rounded"
+          className="block p-0.5 hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] focus:outline-none rounded-sm text-gray-500"
           onClick={handleCloseTab}
         >
-          <Icon name={IconName.Close} className="w-4 h-4" />
+          <Icon name={IconName.Close} className="w-3 h-3" />
         </button>
       </button>
       {showOptions && (
         <div
-          className="absolute z-10 w-full bg-menu shadow-lg border border-menu max-h-60 overflow-auto top-8 left-0"
+          className="absolute z-10 w-full bg-[rgba(0,0,0,0.02)] dark:bg-[rgba(255,255,255,0.02)] border border-tab-inactive/30 max-h-60 overflow-auto top-7 left-0"
           role="menu"
         >
           {tabs.map((tab, index) => (
@@ -103,11 +103,10 @@ const TabsDropdown = ({
               aria-selected={currentConversation.title === tab.name}
               onClick={() => handleSelectChange(tab)}
               ref={selectedTabRef}
-              className={`w-full text-start py-2 px-2 text-xs bg-menu hover:bg-menu-selection focus:bg-menu-selection focus:underline cursor-pointer appearance-none ${
-                currentConversation.title === tab.name
-                  ? "bg-menu-selection font-semibold"
-                  : ""
-              }`}
+              className={`w-full text-start py-1.5 px-2 text-[9px] hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] focus:bg-[rgba(0,0,0,0.05)] dark:focus:bg-[rgba(255,255,255,0.05)] cursor-pointer appearance-none text-gray-700 dark:text-gray-300 ${currentConversation.title === tab.name
+                ? "bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] font-medium"
+                : ""
+                }`}
             >
               {tab.name}
             </button>
