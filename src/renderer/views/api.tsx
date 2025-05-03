@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import CodeBlock from "../components/CodeBlock";
+import { Icon, IconName } from "../components/Icon";
 import { useDebounce } from "../helpers";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { useMessenger } from "../send-to-backend";
@@ -9,8 +10,32 @@ import {
   setApiKeyStatus,
   setExtensionSettings,
 } from "../store/app";
-import { DEFAULT_EXTENSION_SETTINGS } from "../types";
-import { Icon, IconName } from "../components/Icon";
+import { DEFAULT_EXTENSION_SETTINGS, Model } from "../types";
+
+// Add custom animations for the splash page
+const splashAnimations = `
+  @keyframes pulse-slow {
+    0% { opacity: 0.6; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+    100% { opacity: 0.6; transform: scale(1); }
+  }
+  @keyframes spin-slow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .animate-pulse-slow {
+    animation: pulse-slow 4s ease-in-out infinite;
+  }
+  .animate-spin-slow {
+    animation: spin-slow 10s linear infinite;
+  }
+  .animation-delay-1000 {
+    animation-delay: 1s;
+  }
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+`;
 
 const API_KEY_PLACEHOLDER = "sk-...";
 interface LlmTemplate {
@@ -23,6 +48,7 @@ interface LlmTemplate {
   showAllModelSuggestion?: boolean;
   manualModelInput?: boolean;
   showAzureApiVersionInput?: boolean;
+  showModelSelection?: boolean;
   tested?: boolean;
 }
 const LLM_TEMPLATES: LlmTemplate[] = [
@@ -69,11 +95,12 @@ const LLM_TEMPLATES: LlmTemplate[] = [
   {
     name: "OpenRouter AI",
     instructions:
-      "To use OpenRouter AI, you must have an account at https://openrouter.ai and provide your API key.",
+      "To use OpenRouter AI, you must have an account at https://openrouter.ai and provide your API key. You can select from a wide range of models available on OpenRouter.",
     apiUrl: new URL("https://openrouter.ai/api/v1"),
     docsUrl: new URL("https://openrouter.ai/docs"),
     showApiKeyInput: true,
     showAllModelSuggestion: true,
+    showModelSelection: true,
     tested: true,
   },
   {
@@ -158,6 +185,11 @@ const API_STRINGS = {
     API_KEY_NOTE: "This extension will remember which API key is used for each API URL. Note that some API's, like OpenRouter, will return models even with the wrong API key, so the 'Valid' status may not be accurate.",
     INVALID_API_KEY_TITLE: "Invalid API Key",
     INVALID_API_KEY_DESCRIPTION: "The API key you entered has failed to get an OK response from OpenAI. Please double check the key was copied in correctly. Also, check that OpenAI is not currently experiencing an API outage. ("
+  },
+  MODEL_SELECTION: {
+    TITLE: "Select Model",
+    DESCRIPTION: "Select a model from the available options. The list will be populated once you've entered a valid API key.",
+    OPENROUTER_DESCRIPTION: "OpenRouter provides access to a wide range of models from different providers. Select the model that best suits your needs.",
   }
 };
 
@@ -171,7 +203,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
   );
   const [selectedTool, setSelectedTool] = useState<LlmTemplate>(
     LLM_TEMPLATES.find((tool) => tool.name === "Other") ??
-      LLM_TEMPLATES[LLM_TEMPLATES.length - 1]
+    LLM_TEMPLATES[LLM_TEMPLATES.length - 1]
   );
   const [showUrlSaved, setShowUrlSaved] = useState(false);
   const [showVersionSaved, setShowVersionSaved] = useState(false);
@@ -179,6 +211,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
   const azureApiVersionInputRef = React.createRef<HTMLInputElement>();
   const [lastApiKeyTest, setLastApiKeyTest] = useState<string | null>(null);
   const backendMessenger = useMessenger(vscode);
+  const [models, setModels] = useState<Model[]>([]);
 
   const handleApiKeyUpdate = useCallback((apiKey: string) => {
     if (apiKey === lastApiKeyTest) {
@@ -243,7 +276,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
     (event: React.ChangeEvent<HTMLSelectElement>) => {
       setSelectedTool(
         LLM_TEMPLATES.find((tool) => tool.name === event.target.value) ??
-          LLM_TEMPLATES[LLM_TEMPLATES.length - 1]
+        LLM_TEMPLATES[LLM_TEMPLATES.length - 1]
       );
     },
     []
@@ -260,23 +293,92 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
     }
   }, []);
 
+  useEffect(() => {
+    if (selectedTool?.name === "OpenRouter AI" && apiKeyStatus === ApiKeyStatus.Valid) {
+      backendMessenger.sendGetModels();
+    }
+  }, [selectedTool?.name, apiKeyStatus]);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const message = event.data;
+      if (message.type === "models") {
+        setModels(message.models);
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
+
   return (
     <div className="api-settings-view overflow-y-auto bg-gradient-to-b from-transparent to-gray-50 dark:to-gray-900/30">
-      <div className="text-center py-8 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 border-b border-gray-200 dark:border-gray-700 mb-6">
-        <div className="relative mx-auto mb-6 w-24 h-24">
-          <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 opacity-75 blur-lg"></div>
-          <div className="relative rounded-full p-5 bg-white dark:bg-gray-800 flex items-center justify-center shadow-lg">
-            <Icon name={IconName.Box} className="w-12 h-12 text-blue-500" aria-hidden="true" />
+      {/* Inject custom animation styles */}
+      <style dangerouslySetInnerHTML={{ __html: splashAnimations }} />
+
+      <div className="text-center py-12 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-indigo-500/20 dark:from-blue-900/40 dark:via-purple-900/40 dark:to-indigo-900/40 border-b border-gray-200 dark:border-gray-700 mb-6 relative overflow-hidden">
+        {/* Animated background elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-20">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl animate-pulse-slow"></div>
+          <div className="absolute bottom-10 right-10 w-72 h-72 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl animate-pulse-slow animation-delay-1000"></div>
+          <div className="absolute bottom-32 left-1/4 w-72 h-72 bg-indigo-500 rounded-full mix-blend-multiply filter blur-3xl animate-pulse-slow animation-delay-2000"></div>
+        </div>
+
+        {/* Icon with enhanced glow effect */}
+        <div className="relative mx-auto mb-8 w-28 h-28">
+          <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-500 via-purple-600 to-indigo-500 opacity-75 blur-lg animate-spin-slow"></div>
+          <div className="relative rounded-full p-6 bg-white dark:bg-gray-800 flex items-center justify-center shadow-xl">
+            <Icon name={IconName.Box} className="w-14 h-14 text-blue-500 dark:text-blue-400" aria-hidden="true" />
           </div>
         </div>
-        <h1 className="text-3xl font-bold mb-3 text-gray-800 dark:text-gray-100 bg-gradient-to-r from-blue-500 to-purple-600 inline-block text-transparent bg-clip-text">
-          LLM Connection Settings
+
+        {/* Main heading with enhanced gradient */}
+        <h1 className="text-4xl font-extrabold mb-4 text-gray-800 dark:text-gray-100 bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-600 inline-block text-transparent bg-clip-text px-4">
+          AI Model Connection Hub
         </h1>
-        <p className="text-gray-600 dark:text-gray-400 max-w-lg mx-auto px-4">
-          Configure your connection to OpenAI, Azure, or local LLMs that are compatible with the OpenAI API format
+
+        {/* Subtitle with badge */}
+        <div className="flex justify-center items-center gap-3 mb-4">
+          <span className="px-3 py-1 text-sm rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 font-medium">
+            OpenAI
+          </span>
+          <span className="px-3 py-1 text-sm rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-800 dark:text-purple-200 font-medium">
+            OpenRouter
+          </span>
+          <span className="px-3 py-1 text-sm rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-200 font-medium">
+            Local LLMs
+          </span>
+          <span className="px-3 py-1 text-sm rounded-full bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 font-medium">
+            Azure AI
+          </span>
+        </div>
+
+        {/* Enhanced description */}
+        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4 mb-6 text-lg">
+          Connect to your favorite AI models and customize your experience with just a few clicks
         </p>
+
+        {/* Features list */}
+        <div className="flex flex-wrap justify-center gap-6 max-w-3xl mx-auto px-4">
+          <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+            <Icon name={IconName.Check} className="w-5 h-5 mr-2 text-green-500" />
+            Multiple model providers
+          </div>
+          <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+            <Icon name={IconName.Check} className="w-5 h-5 mr-2 text-green-500" />
+            Secure API key storage
+          </div>
+          <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+            <Icon name={IconName.Check} className="w-5 h-5 mr-2 text-green-500" />
+            Custom model selection
+          </div>
+          <div className="flex items-center text-sm text-gray-700 dark:text-gray-300">
+            <Icon name={IconName.Check} className="w-5 h-5 mr-2 text-green-500" />
+            Local LLM support
+          </div>
+        </div>
       </div>
-      
+
       <div className="max-w-4xl mx-auto px-6 pb-12">
         <div className="mb-6 bg-white dark:bg-gray-800/40 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
           <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 flex items-center">
@@ -293,7 +395,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
               )}
             </h2>
           </div>
-          
+
           {(!selectedTool || (selectedTool && !selectedTool.tested)) && (
             <div className="px-6 py-3 bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-900/50">
               <p className="flex items-start text-yellow-800 dark:text-yellow-300 text-sm">
@@ -342,7 +444,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
                   </div>
                 </div>
               </div>
-              
+
               {selectedTool && (
                 <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
                   <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center">
@@ -439,7 +541,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
                 </div>
               </div>
             )}
-            
+
             {selectedTool?.azureApiVersion && (
               <div className="mt-5 bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
                 <h3 className="font-medium text-purple-800 dark:text-purple-300 flex items-center mb-2">
@@ -687,7 +789,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
                 API Configuration
               </h2>
             </div>
-            
+
             <div className="p-6">
               <div className="mb-6">
                 <label htmlFor="apiUrl" className="block text-md font-medium mb-2 text-gray-700 dark:text-gray-300 flex items-center">
@@ -705,7 +807,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
                   />
                   {showUrlSaved && (
                     <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-medium">
-                      <Icon name={IconName.Check} className="w-3 h-3 mr-1" /> 
+                      <Icon name={IconName.Check} className="w-3 h-3 mr-1" />
                       Saved
                     </div>
                   )}
@@ -721,7 +823,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
                   </p>
                 </div>
               )}
-              
+
               {selectedTool &&
                 !selectedTool.showAllModelSuggestion &&
                 !selectedTool.showAzureApiVersionInput && (
@@ -734,7 +836,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
                     </p>
                   </div>
                 )}
-              
+
               {selectedTool &&
                 selectedTool.manualModelInput &&
                 selectedTool.name !== "Other" && (
@@ -756,7 +858,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
                 API Authentication
               </h2>
             </div>
-            
+
             <div className="p-6">
               {/* API key: user input */}
               {selectedTool?.showApiKeyInput && (
@@ -800,19 +902,19 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
                       )}
                       {apiKeyStatus === ApiKeyStatus.Valid && (
                         <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-medium">
-                          <Icon name={IconName.Check} className="w-3 h-3 mr-1" /> 
+                          <Icon name={IconName.Check} className="w-3 h-3 mr-1" />
                           Valid
                         </div>
                       )}
                       {apiKeyStatus === ApiKeyStatus.Invalid && (
                         <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full text-xs font-medium">
-                          <Icon name={IconName.AlertTriangle} className="w-3 h-3 mr-1" /> 
+                          <Icon name={IconName.AlertTriangle} className="w-3 h-3 mr-1" />
                           Invalid
                         </div>
                       )}
                       {apiKeyStatus === ApiKeyStatus.Error && (
                         <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full text-xs font-medium">
-                          <Icon name={IconName.AlertTriangle} className="w-3 h-3 mr-1" /> 
+                          <Icon name={IconName.AlertTriangle} className="w-3 h-3 mr-1" />
                           Error
                         </div>
                       )}
@@ -841,7 +943,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
               Model Configuration
             </h2>
           </div>
-          
+
           <div className="p-6">
             {/* Show all models */}
             <div className="mb-6 bg-gray-50 dark:bg-gray-800/30 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
@@ -876,7 +978,7 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
                 </div>
               </div>
             </div>
-            
+
             {/* Manual model input checkbox */}
             {selectedTool?.manualModelInput && (
               <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
@@ -914,6 +1016,50 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
             )}
           </div>
         </div>
+
+        {selectedTool?.showModelSelection && (
+          <div className="mt-6 bg-gray-50 dark:bg-gray-800/30 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+            <div className="flex items-start">
+              <div className="flex-1">
+                <label
+                  htmlFor="modelSelection"
+                  className="block text-md font-medium mb-2 text-gray-700 dark:text-gray-300 flex items-center"
+                >
+                  <Icon name={IconName.Settings} className="w-4 h-4 mr-2 text-blue-500" />
+                  {API_STRINGS.MODEL_SELECTION.TITLE}
+                </label>
+                <select
+                  id="modelSelection"
+                  className="w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 text-input text-sm bg-white dark:bg-gray-800 outline-0 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+                  value={settings.gpt3.model}
+                  onChange={(e) => {
+                    dispatch(setExtensionSettings({
+                      newSettings: {
+                        ...settings,
+                        gpt3: {
+                          ...settings.gpt3,
+                          model: e.target.value
+                        }
+                      }
+                    }));
+                  }}
+                >
+                  <option value="">Select a model...</option>
+                  {models.map((model) => (
+                    <option key={model.id} value={model.id}>
+                      {model.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  {selectedTool.name === "OpenRouter AI"
+                    ? API_STRINGS.MODEL_SELECTION.OPENROUTER_DESCRIPTION
+                    : API_STRINGS.MODEL_SELECTION.DESCRIPTION}
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
