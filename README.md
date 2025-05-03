@@ -6,7 +6,7 @@
 
 ### Production-grade AI coding assistant for VS Code
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg?style=for-the-badge)](https://github.com/M31Lab/Mini/releases)
+[![Version](https://img.shields.io/badge/version-1.0.1-blue.svg?style=for-the-badge)](https://github.com/M31Lab/Mini/releases)
 [![License: ISC](https://img.shields.io/badge/License-MIT-yesllow.svg?style=for-the-badge)](LICENSE)
 [![VS Code Marketplace](https://img.shields.io/badge/VS%20Code-Marketplace-007ACC?style=for-the-badge&logo=visual-studio-code)](https://marketplace.visualstudio.com/items?itemName=m31lab.m31-mini)
 [![TypeScript](https://img.shields.io/badge/TypeScript-4.9-3178C6?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
