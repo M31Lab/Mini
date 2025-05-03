@@ -10,6 +10,7 @@ import {
   setExtensionSettings,
 } from "../store/app";
 import { DEFAULT_EXTENSION_SETTINGS } from "../types";
+import { Icon, IconName } from "../components/Icon";
 
 const API_KEY_PLACEHOLDER = "sk-...";
 interface LlmTemplate {
@@ -260,449 +261,660 @@ export default function ApiSettings({ vscode }: ApiSettingsProps): React.ReactEl
   }, []);
 
   return (
-    <div className="api-settings-view p-4 flex flex-col gap-4 overflow-y-auto">
-      <header>
-        <h1 className="text-xl font-semibold inline-flex flex-wrap gap-2">
-          Connect to
-          <span
-            style={{
-              color: "var(--vscode-gitDecoration-modifiedResourceForeground)",
-            }}
-          >
-            {selectedTool ? selectedTool.name : "your local LLM"}
-          </span>
-          {selectedTool && selectedTool.tested && (
-            <p className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-button-secondary bg-button-secondary">
-              Tested <span className="ml-1">✅</span>
-            </p>
-          )}
-        </h1>
-        {(!selectedTool || (selectedTool && !selectedTool.tested)) && (
-          <p>
-            <strong>Note:</strong> The local LLM tool must be compatible with
-            OpenAI's API. At the moment, this extension <strong>only</strong>{" "}
-            supports OpenAI's API format.
-          </p>
-        )}
-      </header>
-      <section className="p-4 rounded border border-input">
-        <label className="block text-md font-medium mb-2">
-          Select a tool to see instructions for it:
-        </label>
-        <select
-          value={selectedTool.name}
-          onChange={handleToolChange}
-          className="block w-full p-2 text-sm cursor-pointer rounded border border-input text-input bg-input outline-0"
-        >
-          <option
-            value=""
-            disabled
-            style={{
-              backgroundColor: "var(--vscode-tab-activeBackground)",
-            }}
-          >
-            Select a tool...
-          </option>
-          {LLM_TEMPLATES.map((tool, index) => (
-            <option
-              key={`tool-${index}`}
-              value={tool.name}
-              style={{
-                backgroundColor: "var(--vscode-tab-activeBackground)",
-              }}
-            >
-              {tool.name}
-            </option>
-          ))}
-        </select>
-        {selectedTool && (
-          <div>
-            <h2 className="text-lg font-medium mt-2">Instructions</h2>
-            {selectedTool.instructions
-              .split(/(```bash\n[\s\S]*?\n```)/)
-              .reduce((acc: any[], item: any) => {
-                if (item) {
-                  acc.push(item);
-                }
-                return acc;
-              }, [])
-              .map((item: string, index: React.Key | null | undefined) => {
-                if (item.startsWith("```bash")) {
-                  // remove the ```bash and ``` from the string
-                  item = item.replace(/```bash\n/g, "").replace(/\n```/g, "");
-                  return (
-                    <CodeBlock
-                      margins={false}
-                      className="my-1"
-                      code={item}
-                      key={`code-${index}`}
-                      vscode={vscode}
-                    />
-                  );
-                } else {
-                  return item
-                    .split("\n")
-                    .map((paragraph) => <p>{paragraph}</p>);
-                }
-              })}
-            {selectedTool.docsUrl && (
-              <p>
-                <strong className="inline-block mt-2 mb-1">Full Docs:</strong>{" "}
-                <a
-                  href={selectedTool.docsUrl.href}
-                  target="_blank"
-                  className="text-blue-500"
-                >
-                  {selectedTool.docsUrl.href}
-                </a>
-              </p>
-            )}
+    <div className="api-settings-view overflow-y-auto bg-gradient-to-b from-transparent to-gray-50 dark:to-gray-900/30">
+      <div className="text-center py-8 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 border-b border-gray-200 dark:border-gray-700 mb-6">
+        <div className="relative mx-auto mb-6 w-24 h-24">
+          <div className="absolute -inset-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 opacity-75 blur-lg"></div>
+          <div className="relative rounded-full p-5 bg-white dark:bg-gray-800 flex items-center justify-center shadow-lg">
+            <Icon name={IconName.Box} className="w-12 h-12 text-blue-500" aria-hidden="true" />
           </div>
-        )}
-        {selectedTool && selectedTool.apiUrl && (
-          <div>
-            <strong className="inline-block mt-2 mb-1">
-              Suggested API URL:
-            </strong>
-            <div className="flex flex-wrap gap-2">
-              <CodeBlock
-                margins={false}
-                className="flex-grow"
-                code={selectedTool.apiUrl.href}
-                vscode={vscode}
-              />
-              <button
-                type="button"
-                className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-button hover:text-button-hover focus:outline-none focus:ring-2 focus:ring-offset-2 bg-button hover:bg-button-hover"
-                onClick={() => {
-                  backendMessenger.sendChangeApiUrl(
-                    selectedTool.apiUrl?.href ?? ""
-                  );
-
-                  if (apiUrlInputRef.current) {
-                    apiUrlInputRef.current.value =
-                      selectedTool.apiUrl?.href ?? "";
-                  }
-
-                  setShowUrlSaved(true);
-
-                  setTimeout(() => {
-                    setShowUrlSaved(false);
-                  }, 2000);
-                }}
-              >
-                Use this API URL
-              </button>
-            </div>
-          </div>
-        )}
-        {selectedTool?.azureApiVersion && (
-          <div>
-            <strong className="inline-block mt-2 mb-1">
-              Suggested Azure API Version:
-            </strong>
-            <div className="flex flex-wrap gap-2">
-              <CodeBlock
-                margins={false}
-                className="flex-grow"
-                code={selectedTool.azureApiVersion}
-                vscode={vscode}
-              />
-              <button
-                type="button"
-                className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-button hover:text-button-hover focus:outline-none focus:ring-2 focus:ring-offset-2 bg-button hover:bg-button-hover"
-                onClick={() => {
-                  backendMessenger.sendSetAzureApiVersion(
-                    selectedTool.azureApiVersion ?? ""
-                  );
-
-                  if (azureApiVersionInputRef.current) {
-                    azureApiVersionInputRef.current.value =
-                      selectedTool.azureApiVersion ?? "";
-                  }
-
-                  setShowVersionSaved(true);
-
-                  setTimeout(() => {
-                    setShowVersionSaved(false);
-                  }, 2000);
-                }}
-              >
-                Use this Azure API Version
-              </button>
-            </div>
-          </div>
-        )}
-        {selectedTool && selectedTool.showAllModelSuggestion && (
-          <p className="mt-2">
-            With this API it is <strong>recommended</strong> to check the "Show
-            all models" checkbox below to see all models.
-          </p>
-        )}
-        {selectedTool &&
-          !selectedTool.showAllModelSuggestion &&
-          !selectedTool.showAzureApiVersionInput && (
-            <p className="mt-2">
-              It is recommended you do <strong>not</strong> check the "Show all
-              models" checkbox below or a lot of unnecessary models will be
-              shown.
-            </p>
-          )}
-        {selectedTool &&
-          selectedTool.manualModelInput &&
-          selectedTool.name !== "Other" && (
-            <p className="mt-2">
-              This tool requires <strong>manual model input</strong>. It does
-              not support fetching models from the /models endpoint.
-            </p>
-          )}
-      </section>
-
-      <section>
-        <label htmlFor="apiUrl" className="block text-md font-medium my-2">
-          <span className="underline">Current</span> API URL:
-        </label>
-        <div className="relative">
-          <input
-            id="apiUrl"
-            ref={apiUrlInputRef}
-            type="text"
-            onChange={(e) => debouncedSetApiUrl(e.target.value)}
-            className="block w-full p-2 text-sm rounded-sm border border-input text-input bg-input outline-0"
-            placeholder={selectedTool?.apiUrl?.href ?? "https://..."}
-          />
-          {showUrlSaved && (
-            <span className="absolute top-2 right-2 transform px-2 py-0.5 text-green-500 border border-green-500 rounded bg-menu">
-              Saved
-            </span>
-          )}
         </div>
-      </section>
-
-      {/* Azure only */}
-      {selectedTool?.showAzureApiVersionInput && (
-        <section>
-          <label
-            htmlFor="azureApiVersion"
-            className="block text-md font-medium my-2"
-          >
-            <span className="underline">Current</span> Azure API Version of the
-            deployment:
-          </label>
-          <div className="relative">
-            <input
-              id="azureApiVersion"
-              ref={azureApiVersionInputRef}
-              type="text"
-              onChange={(e) => {
-                backendMessenger.sendSetAzureApiVersion(e.target.value);
-              }}
-              className="block w-full p-2 text-sm rounded-sm border border-input text-input bg-input outline-0"
-              placeholder={DEFAULT_EXTENSION_SETTINGS.azureApiVersion}
-            />
-            {showVersionSaved && (
-              <span className="absolute top-2 right-2 transform px-2 py-0.5 text-green-500 border border-green-500 rounded bg-menu">
-                Saved
+        <h1 className="text-3xl font-bold mb-3 text-gray-800 dark:text-gray-100 bg-gradient-to-r from-blue-500 to-purple-600 inline-block text-transparent bg-clip-text">
+          LLM Connection Settings
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 max-w-lg mx-auto px-4">
+          Configure your connection to OpenAI, Azure, or local LLMs that are compatible with the OpenAI API format
+        </p>
+      </div>
+      
+      <div className="max-w-4xl mx-auto px-6 pb-12">
+        <div className="mb-6 bg-white dark:bg-gray-800/40 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700 flex items-center">
+            <Icon name={IconName.Settings} className="w-5 h-5 mr-3 text-blue-500" />
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+              Connect to
+              <span className="ml-2 text-blue-500 dark:text-blue-400 font-bold">
+                {selectedTool ? selectedTool.name : "your local LLM"}
               </span>
-            )}
+              {selectedTool && selectedTool.tested && (
+                <span className="ml-3 inline-flex items-center px-2.5 py-1 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
+                  <Icon name={IconName.Check} className="w-3.5 h-3.5 mr-1" /> Tested
+                </span>
+              )}
+            </h2>
           </div>
-        </section>
-      )}
+          
+          {(!selectedTool || (selectedTool && !selectedTool.tested)) && (
+            <div className="px-6 py-3 bg-yellow-50 dark:bg-yellow-900/20 border-b border-yellow-200 dark:border-yellow-900/50">
+              <p className="flex items-start text-yellow-800 dark:text-yellow-300 text-sm">
+                <Icon name={IconName.AlertTriangle} className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" />
+                <span>
+                  <strong>Note:</strong> The local LLM tool must be compatible with
+                  OpenAI's API. At the moment, this extension <strong>only</strong>{" "}
+                  supports OpenAI's API format.
+                </span>
+              </p>
+            </div>
+          )}
 
-      <section>
-        {/* API key: user input */}
-        {selectedTool?.showApiKeyInput && (
-          <>
-            <div>
-              <label
-                htmlFor="apiKey"
-                className="block text-md font-medium my-2"
-              >
-                <span className="underline">Current</span> API key{" "}
-                {selectedTool?.apiUrl && (
-                  <span className="text-xs">
-                    for {new URL(settings.gpt3.apiBaseUrl).hostname}
-                  </span>
-                )}
-              </label>
-              <div className="flex flex-wrap gap-2 justify-end">
-                <div className="flex-grow relative">
-                  <input
-                    type="password"
-                    id="apiKey"
-                    onChange={(event) => debouncedSetApiKey(event.target.value)}
-                    onPaste={(event) =>
-                      handleApiKeyUpdate(
-                        event.clipboardData.getData("text/plain")
-                      )
-                    }
-                    placeholder={API_KEY_PLACEHOLDER}
-                    className="w-full px-3 py-2 rounded-sm border text-input text-sm border-input bg-input outline-0"
-                    disabled={apiKeyStatus === ApiKeyStatus.Pending}
-                  />
-                  {apiKeyStatus === ApiKeyStatus.Pending && (
-                    <span className="absolute top-2 right-2 transform px-2 py-0.5 text-yellow-500 border border-yellow-500 rounded bg-menu">
-                      Testing...
-                    </span>
-                  )}
-                  {apiKeyStatus === ApiKeyStatus.Authenticating && (
-                    <span className="absolute top-2 right-2 transform px-2 py-0.5 text-yellow-500 border border-yellow-500 rounded bg-menu">
-                      Authenticating...
-                    </span>
-                  )}
-                  {apiKeyStatus === ApiKeyStatus.Valid && (
-                    <span className="absolute top-2 right-2 transform px-2 py-0.5 text-green-500 border border-green-500 rounded bg-menu">
-                      Valid
-                    </span>
-                  )}
-                  {apiKeyStatus === ApiKeyStatus.Invalid && (
-                    <span className="absolute top-2 right-2 transform px-2 py-0.5 text-red-500 border border-red-500 rounded bg-menu">
-                      Invalid
-                    </span>
-                  )}
-                  {apiKeyStatus === ApiKeyStatus.Error && (
-                    <span className="absolute top-2 right-2 transform px-2 py-0.5 text-red-500 border border-red-500 rounded bg-menu">
-                      Error
-                    </span>
-                  )}
-                  {apiKeyStatus === ApiKeyStatus.Unknown && (
-                    <span className="absolute top-2 right-2 transform px-2 py-0.5 text-gray-500 border border-gray-500 rounded bg-menu">
-                      Unknown
-                    </span>
-                  )}
-                  {apiKeyStatus === ApiKeyStatus.Unset && (
-                    <span className="absolute top-2 right-2 transform px-2 py-0.5 text-gray-500 border border-gray-500 rounded bg-menu">
-                      Unset
-                    </span>
+          <section className="p-4 rounded border border-input">
+            <div className="p-6">
+              <div className="mb-6">
+                <label className="block text-md font-medium mb-2 text-gray-700 dark:text-gray-300 flex items-center">
+                  <Icon name={IconName.Box} className="w-5 h-5 mr-2 text-blue-500" />
+                  Select an LLM provider:
+                </label>
+                <div className="relative">
+                  <select
+                    value={selectedTool.name}
+                    onChange={handleToolChange}
+                    className="block w-full p-3 pl-4 pr-10 text-base border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                  >
+                    <option
+                      value=""
+                      disabled
+                      className="bg-gray-100 dark:bg-gray-700 font-medium"
+                    >
+                      Select a tool...
+                    </option>
+                    {LLM_TEMPLATES.map((tool, index) => (
+                      <option
+                        key={`tool-${index}`}
+                        value={tool.name}
+                        className="py-2"
+                      >
+                        {tool.name} {tool.tested ? "✓" : ""}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700 dark:text-gray-300">
+                    <Icon name={IconName.ChevronDown} className="w-5 h-5" />
+                  </div>
+                </div>
+              </div>
+              
+              {selectedTool && (
+                <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+                  <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center">
+                    <Icon name={IconName.Help} className="w-5 h-5 mr-2 text-blue-500" />
+                    Instructions
+                  </h2>
+                  <div className="prose prose-sm dark:prose-invert max-w-none">
+                    {selectedTool.instructions
+                      .split(/(```bash\n[\s\S]*?\n```)/)
+                      .reduce((acc: any[], item: any) => {
+                        if (item) {
+                          acc.push(item);
+                        }
+                        return acc;
+                      }, [])
+                      .map((item: string, index: React.Key | null | undefined) => {
+                        if (item.startsWith("```bash")) {
+                          // remove the ```bash and ``` from the string
+                          item = item.replace(/```bash\n/g, "").replace(/\n```/g, "");
+                          return (
+                            <div className="my-3 rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
+                              <CodeBlock
+                                margins={false}
+                                className="w-full"
+                                code={item}
+                                key={`code-${index}`}
+                                vscode={vscode}
+                              />
+                            </div>
+                          );
+                        } else {
+                          return item
+                            .split("\n")
+                            .map((paragraph, i) => (
+                              <p key={i} className="mb-2 text-gray-700 dark:text-gray-300">{paragraph}</p>
+                            ));
+                        }
+                      })}
+                  </div>
+                  {selectedTool.docsUrl && (
+                    <a
+                      href={selectedTool.docsUrl.href}
+                      target="_blank"
+                      className="inline-flex items-center mt-4 px-4 py-2 text-sm font-medium rounded-md text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-colors duration-200"
+                    >
+                      <Icon name={IconName.Help} className="w-4 h-4 mr-2" />
+                      View Documentation
+                    </a>
                   )}
                 </div>
-                <div className="flex gap-2">
-                  {apiKeyStatus === ApiKeyStatus.Valid && (
-                    <button
-                      className="px-3 py-2 text-sm rounded bg-button-secondary text-button-secondary hover:bg-button-secondary-hover hover:text-button-secondary-hover focus:outline-none focus:ring-2 focus:ring-offset-2"
-                      onClick={() => {
-                        dispatch(setApiKeyStatus(ApiKeyStatus.Unset));
+              )}
+            </div>
+          </section>
 
-                        debouncedSetApiKey("");
-                      }}
-                    >
-                      Remove
-                    </button>
-                  )}
-                  {selectedTool.name === "OpenRouter AI" && (
-                    <button
-                      className="px-3 py-2 text-sm rounded bg-button text-button-secondary hover:bg-button-hover hover:text-button focus:outline-none focus:ring-2 focus:ring-offset-2"
-                      onClick={() => {
-                        // If the current api base url is not OpenRouter, then set it to OpenRouter
-                        if (
-                          settings.gpt3.apiBaseUrl !==
-                          "https://openrouter.ai/api/v1"
-                        ) {
-                          backendMessenger.sendChangeApiUrl(
-                            "https://openrouter.ai/api/v1"
-                          );
+          <section>
+            {selectedTool && selectedTool.apiUrl && (
+              <div className="mt-5 bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                <h3 className="font-medium text-blue-800 dark:text-blue-300 flex items-center mb-2">
+                  <Icon name={IconName.Box} className="w-4 h-4 mr-2" />
+                  Suggested API URL
+                </h3>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <div className="flex-grow">
+                    <CodeBlock
+                      margins={false}
+                      className="rounded border border-blue-200 dark:border-blue-800"
+                      code={selectedTool.apiUrl.href}
+                      vscode={vscode}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="flex-shrink-0 inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 shadow-sm transition-all duration-200"
+                    onClick={() => {
+                      backendMessenger.sendChangeApiUrl(
+                        selectedTool.apiUrl?.href ?? ""
+                      );
+
+                      if (apiUrlInputRef.current) {
+                        apiUrlInputRef.current.value =
+                          selectedTool.apiUrl?.href ?? "";
+                      }
+
+                      setShowUrlSaved(true);
+
+                      setTimeout(() => {
+                        setShowUrlSaved(false);
+                      }, 2000);
+                    }}
+                  >
+                    <Icon name={IconName.Check} className="w-4 h-4 mr-2" />
+                    Use this API URL
+                  </button>
+                </div>
+              </div>
+            )}
+            
+            {selectedTool?.azureApiVersion && (
+              <div className="mt-5 bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+                <h3 className="font-medium text-purple-800 dark:text-purple-300 flex items-center mb-2">
+                  <Icon name={IconName.Settings} className="w-4 h-4 mr-2" />
+                  Suggested Azure API Version
+                </h3>
+                <div className="flex flex-wrap gap-3 items-center">
+                  <div className="flex-grow">
+                    <CodeBlock
+                      margins={false}
+                      className="rounded border border-purple-200 dark:border-purple-800"
+                      code={selectedTool.azureApiVersion}
+                      vscode={vscode}
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    className="flex-shrink-0 inline-flex items-center px-4 py-2 text-sm font-medium rounded-md text-white bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 shadow-sm transition-all duration-200"
+                    onClick={() => {
+                      backendMessenger.sendSetAzureApiVersion(
+                        selectedTool.azureApiVersion ?? ""
+                      );
+
+                      if (azureApiVersionInputRef.current) {
+                        azureApiVersionInputRef.current.value =
+                          selectedTool.azureApiVersion ?? "";
+                      }
+
+                      setShowVersionSaved(true);
+
+                      setTimeout(() => {
+                        setShowVersionSaved(false);
+                      }, 2000);
+                    }}
+                  >
+                    <Icon name={IconName.Check} className="w-4 h-4 mr-2" />
+                    Use this Version
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
+
+          <section>
+            {/* API key: user input */}
+            {selectedTool?.showApiKeyInput && (
+              <>
+                <div>
+                  <label
+                    htmlFor="apiKey"
+                    className="block text-md font-medium my-2"
+                  >
+                    <span className="underline">Current</span> API key{" "}
+                    {selectedTool?.apiUrl && (
+                      <span className="text-xs">
+                        for {new URL(settings.gpt3.apiBaseUrl).hostname}
+                      </span>
+                    )}
+                  </label>
+                  <div className="flex flex-wrap gap-2 justify-end">
+                    <div className="flex-grow relative">
+                      <input
+                        type="password"
+                        id="apiKey"
+                        onChange={(event) => debouncedSetApiKey(event.target.value)}
+                        onPaste={(event) =>
+                          handleApiKeyUpdate(
+                            event.clipboardData.getData("text/plain")
+                          )
                         }
+                        placeholder={API_KEY_PLACEHOLDER}
+                        className="w-full px-3 py-2 rounded-sm border text-input text-sm border-input bg-input outline-0"
+                        disabled={apiKeyStatus === ApiKeyStatus.Pending}
+                      />
+                      {apiKeyStatus === ApiKeyStatus.Pending && (
+                        <span className="absolute top-2 right-2 transform px-2 py-0.5 text-yellow-500 border border-yellow-500 rounded bg-menu">
+                          Testing...
+                        </span>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Authenticating && (
+                        <span className="absolute top-2 right-2 transform px-2 py-0.5 text-yellow-500 border border-yellow-500 rounded bg-menu">
+                          Authenticating...
+                        </span>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Valid && (
+                        <span className="absolute top-2 right-2 transform px-2 py-0.5 text-green-500 border border-green-500 rounded bg-menu">
+                          Valid
+                        </span>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Invalid && (
+                        <span className="absolute top-2 right-2 transform px-2 py-0.5 text-red-500 border border-red-500 rounded bg-menu">
+                          Invalid
+                        </span>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Error && (
+                        <span className="absolute top-2 right-2 transform px-2 py-0.5 text-red-500 border border-red-500 rounded bg-menu">
+                          Error
+                        </span>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Unknown && (
+                        <span className="absolute top-2 right-2 transform px-2 py-0.5 text-gray-500 border border-gray-500 rounded bg-menu">
+                          Unknown
+                        </span>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Unset && (
+                        <span className="absolute top-2 right-2 transform px-2 py-0.5 text-gray-500 border border-gray-500 rounded bg-menu">
+                          Unset
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      {apiKeyStatus === ApiKeyStatus.Valid && (
+                        <button
+                          className="px-3 py-2 text-sm rounded bg-button-secondary text-button-secondary hover:bg-button-secondary-hover hover:text-button-secondary-hover focus:outline-none focus:ring-2 focus:ring-offset-2"
+                          onClick={() => {
+                            dispatch(setApiKeyStatus(ApiKeyStatus.Unset));
 
-                        dispatch(setApiKeyStatus(ApiKeyStatus.Authenticating));
+                            debouncedSetApiKey("");
+                          }}
+                        >
+                          Remove
+                        </button>
+                      )}
+                      {selectedTool.name === "OpenRouter AI" && (
+                        <button
+                          className="px-3 py-2 text-sm rounded bg-button text-button-secondary hover:bg-button-hover hover:text-button focus:outline-none focus:ring-2 focus:ring-offset-2"
+                          onClick={() => {
+                            // If the current api base url is not OpenRouter, then set it to OpenRouter
+                            if (
+                              settings.gpt3.apiBaseUrl !==
+                              "https://openrouter.ai/api/v1"
+                            ) {
+                              backendMessenger.sendChangeApiUrl(
+                                "https://openrouter.ai/api/v1"
+                              );
+                            }
 
-                        // hacky - wait for 500ms to ensure the API URL is set before generating the API key
-                        setTimeout(() => {
-                          backendMessenger.sendGenerateOpenRouterApiKey();
-                        }, 500);
-                      }}
-                    >
-                      {apiKeyStatus === ApiKeyStatus.Valid
-                        ? "Regenerate"
-                        : "Generate New"}
-                    </button>
+                            dispatch(setApiKeyStatus(ApiKeyStatus.Authenticating));
+
+                            // hacky - wait for 500ms to ensure the API URL is set before generating the API key
+                            setTimeout(() => {
+                              backendMessenger.sendGenerateOpenRouterApiKey();
+                            }, 500);
+                          }}
+                        >
+                          {apiKeyStatus === ApiKeyStatus.Valid
+                            ? "Regenerate"
+                            : "Generate New"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <p className="text-xs mt-2">
+                    {API_STRINGS.API_KEY_STATUS.API_KEY_NOTE}
+                  </p>
+                </div>
+                {/* API key: error message */}
+                {apiKeyStatus === ApiKeyStatus.Invalid &&
+                  !!apiUrlInputRef.current?.value.length && (
+                    <div className="flex flex-col gap-2 p-4 bg-red-500 text bg-opacity-10 rounded">
+                      <h2 className="font-medium">
+                        {API_STRINGS.API_KEY_STATUS.INVALID_API_KEY_TITLE}
+                      </h2>
+                      <p>
+                        {API_STRINGS.API_KEY_STATUS.INVALID_API_KEY_DESCRIPTION}
+                        <a href="https://status.openai.com/" target="_blank">
+                          https://status.openai.com/
+                        </a>
+                      </p>
+                    </div>
+                  )}
+              </>
+            )}
+            {/* Show all models */}
+            <div className="flex flex-col gap-2 mt-3">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="showAllModels"
+                  checked={settings.showAllModels}
+                  onChange={(e) => {
+                    dispatch(
+                      setExtensionSettings({
+                        newSettings: {
+                          ...settings,
+                          showAllModels: e.target.checked,
+                        },
+                      })
+                    );
+
+                    backendMessenger.sendSetShowAllModels(e.target.checked);
+                  }}
+                  className="rounded cursor-pointer bg-input border-input"
+                />
+                <label htmlFor="showAllModels" className="text-sm cursor-pointer">
+                  {API_STRINGS.SHOW_ALL_MODELS}
+                </label>
+              </div>
+              <p>
+                {API_STRINGS.SHOW_ALL_MODELS_DESCRIPTION}
+              </p>
+            </div>
+            {/* Manual model input checkbox */}
+            {selectedTool?.manualModelInput && (
+              <div className="flex flex-col gap-2 mt-3">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="manualModelInput"
+                    checked={settings.manualModelInput}
+                    onChange={(e) => {
+                      dispatch(
+                        setExtensionSettings({
+                          newSettings: {
+                            ...settings,
+                            manualModelInput: e.target.checked,
+                          },
+                        })
+                      );
+
+                      backendMessenger.sendSetManualModelInput(e.target.checked);
+                    }}
+                    className="rounded cursor-pointer bg-input border-input"
+                  />
+                  <label
+                    htmlFor="manualModelInput"
+                    className="text-sm cursor-pointer"
+                  >
+                    {API_STRINGS.MANUAL_MODEL_INPUT}
+                  </label>
+                </div>
+                <p>
+                  {API_STRINGS.MANUAL_MODEL_INPUT_HINT}
+                </p>
+              </div>
+            )}
+          </section>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-white dark:bg-gray-800/40 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                <Icon name={IconName.Settings} className="w-5 h-5 mr-3 text-blue-500" />
+                API Configuration
+              </h2>
+            </div>
+            
+            <div className="p-6">
+              <div className="mb-6">
+                <label htmlFor="apiUrl" className="block text-md font-medium mb-2 text-gray-700 dark:text-gray-300 flex items-center">
+                  <Icon name={IconName.Box} className="w-4 h-4 mr-2 text-blue-500" />
+                  <span className="underline">Current</span> API URL:
+                </label>
+                <div className="relative">
+                  <input
+                    id="apiUrl"
+                    ref={apiUrlInputRef}
+                    type="text"
+                    onChange={(e) => debouncedSetApiUrl(e.target.value)}
+                    className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                    placeholder={selectedTool?.apiUrl?.href ?? "https://..."}
+                  />
+                  {showUrlSaved && (
+                    <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-medium">
+                      <Icon name={IconName.Check} className="w-3 h-3 mr-1" /> 
+                      Saved
+                    </div>
                   )}
                 </div>
               </div>
-              <p className="text-xs mt-2">
-                {API_STRINGS.API_KEY_STATUS.API_KEY_NOTE}
-              </p>
-            </div>
-            {/* API key: error message */}
-            {apiKeyStatus === ApiKeyStatus.Invalid &&
-              !!apiUrlInputRef.current?.value.length && (
-                <div className="flex flex-col gap-2 p-4 bg-red-500 text bg-opacity-10 rounded">
-                  <h2 className="font-medium">
-                    {API_STRINGS.API_KEY_STATUS.INVALID_API_KEY_TITLE}
-                  </h2>
-                  <p>
-                    {API_STRINGS.API_KEY_STATUS.INVALID_API_KEY_DESCRIPTION}
-                    <a href="https://status.openai.com/" target="_blank">
-                      https://status.openai.com/
-                    </a>
+
+              {selectedTool && selectedTool.showAllModelSuggestion && (
+                <div className="mt-5 flex items-start bg-indigo-50 dark:bg-indigo-900/20 rounded-lg p-4 border border-indigo-200 dark:border-indigo-800">
+                  <Icon name={IconName.Lightbulb} className="w-5 h-5 text-indigo-500 mr-3 mt-0.5 flex-shrink-0" />
+                  <p className="text-indigo-700 dark:text-indigo-300 text-sm">
+                    With this API it is <strong>recommended</strong> to check the "Show
+                    all models" checkbox below to see all models.
                   </p>
                 </div>
               )}
-          </>
-        )}
-        {/* Show all models */}
-        <div className="flex flex-col gap-2 mt-3">
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="showAllModels"
-              checked={settings.showAllModels}
-              onChange={(e) => {
-                dispatch(
-                  setExtensionSettings({
-                    newSettings: {
-                      ...settings,
-                      showAllModels: e.target.checked,
-                    },
-                  })
-                );
-
-                backendMessenger.sendSetShowAllModels(e.target.checked);
-              }}
-              className="rounded cursor-pointer bg-input border-input"
-            />
-            <label htmlFor="showAllModels" className="text-sm cursor-pointer">
-              {API_STRINGS.SHOW_ALL_MODELS}
-            </label>
-          </div>
-          <p>
-            {API_STRINGS.SHOW_ALL_MODELS_DESCRIPTION}
-          </p>
-        </div>
-        {/* Manual model input checkbox */}
-        {selectedTool?.manualModelInput && (
-          <div className="flex flex-col gap-2 mt-3">
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                id="manualModelInput"
-                checked={settings.manualModelInput}
-                onChange={(e) => {
-                  dispatch(
-                    setExtensionSettings({
-                      newSettings: {
-                        ...settings,
-                        manualModelInput: e.target.checked,
-                      },
-                    })
-                  );
-
-                  backendMessenger.sendSetManualModelInput(e.target.checked);
-                }}
-                className="rounded cursor-pointer bg-input border-input"
-              />
-              <label
-                htmlFor="manualModelInput"
-                className="text-sm cursor-pointer"
-              >
-                {API_STRINGS.MANUAL_MODEL_INPUT}
-              </label>
+              
+              {selectedTool &&
+                !selectedTool.showAllModelSuggestion &&
+                !selectedTool.showAzureApiVersionInput && (
+                  <div className="mt-5 flex items-start bg-amber-50 dark:bg-amber-900/20 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+                    <Icon name={IconName.Lightbulb} className="w-5 h-5 text-amber-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <p className="text-amber-700 dark:text-amber-300 text-sm">
+                      It is recommended you do <strong>not</strong> check the "Show all
+                      models" checkbox below or a lot of unnecessary models will be
+                      shown.
+                    </p>
+                  </div>
+                )}
+              
+              {selectedTool &&
+                selectedTool.manualModelInput &&
+                selectedTool.name !== "Other" && (
+                  <div className="mt-5 flex items-start bg-rose-50 dark:bg-rose-900/20 rounded-lg p-4 border border-rose-200 dark:border-rose-800">
+                    <Icon name={IconName.Lightbulb} className="w-5 h-5 text-rose-500 mr-3 mt-0.5 flex-shrink-0" />
+                    <p className="text-rose-700 dark:text-rose-300 text-sm">
+                      This tool requires <strong>manual model input</strong>. It does
+                      not support fetching models from the /models endpoint.
+                    </p>
+                  </div>
+                )}
             </div>
-            <p>
-              {API_STRINGS.MANUAL_MODEL_INPUT_HINT}
-            </p>
           </div>
-        )}
-      </section>
+
+          <div className="bg-white dark:bg-gray-800/40 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+            <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
+              <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+                <Icon name={IconName.Settings} className="w-5 h-5 mr-3 text-blue-500" />
+                API Authentication
+              </h2>
+            </div>
+            
+            <div className="p-6">
+              {/* API key: user input */}
+              {selectedTool?.showApiKeyInput && (
+                <div>
+                  <div className="mb-6">
+                    <label
+                      htmlFor="apiKey"
+                      className="block text-md font-medium mb-2 text-gray-700 dark:text-gray-300 flex items-center"
+                    >
+                      <Icon name={IconName.Settings} className="w-4 h-4 mr-2 text-blue-500" />
+                      <span className="underline">Current</span> API key
+                      {selectedTool?.apiUrl && (
+                        <span className="ml-2 text-xs px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-gray-700 dark:text-gray-300">
+                          {new URL(settings.gpt3.apiBaseUrl).hostname}
+                        </span>
+                      )}
+                    </label>
+                    <div className="relative">
+                      <input
+                        type="password"
+                        id="apiKey"
+                        onChange={(event) => debouncedSetApiKey(event.target.value)}
+                        onPaste={(event) =>
+                          handleApiKeyUpdate(
+                            event.clipboardData.getData("text/plain")
+                          )
+                        }
+                        placeholder={API_KEY_PLACEHOLDER}
+                        className="block w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                        disabled={apiKeyStatus === ApiKeyStatus.Pending}
+                      />
+                      {apiKeyStatus === ApiKeyStatus.Pending && (
+                        <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full text-xs font-medium animate-pulse">
+                          Testing...
+                        </div>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Authenticating && (
+                        <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 rounded-full text-xs font-medium animate-pulse">
+                          Authenticating...
+                        </div>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Valid && (
+                        <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-full text-xs font-medium">
+                          <Icon name={IconName.Check} className="w-3 h-3 mr-1" /> 
+                          Valid
+                        </div>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Invalid && (
+                        <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full text-xs font-medium">
+                          <Icon name={IconName.AlertTriangle} className="w-3 h-3 mr-1" /> 
+                          Invalid
+                        </div>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Error && (
+                        <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-full text-xs font-medium">
+                          <Icon name={IconName.AlertTriangle} className="w-3 h-3 mr-1" /> 
+                          Error
+                        </div>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Unknown && (
+                        <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium">
+                          Unknown
+                        </div>
+                      )}
+                      {apiKeyStatus === ApiKeyStatus.Unset && (
+                        <div className="absolute top-1/2 -translate-y-1/2 right-3 flex items-center px-2 py-1 bg-gray-100 dark:bg-gray-900/30 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium">
+                          Unset
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 bg-white dark:bg-gray-800/40 rounded-lg shadow-sm overflow-hidden border border-gray-200 dark:border-gray-700">
+          <div className="px-6 py-4 bg-gray-50 dark:bg-gray-800/60 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center">
+              <Icon name={IconName.Settings} className="w-5 h-5 mr-3 text-blue-500" />
+              Model Configuration
+            </h2>
+          </div>
+          
+          <div className="p-6">
+            {/* Show all models */}
+            <div className="mb-6 bg-gray-50 dark:bg-gray-800/30 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+              <div className="flex items-start">
+                <div className="flex h-5 items-center">
+                  <input
+                    type="checkbox"
+                    id="showAllModels"
+                    checked={settings.showAllModels}
+                    onChange={(e) => {
+                      dispatch(
+                        setExtensionSettings({
+                          newSettings: {
+                            ...settings,
+                            showAllModels: e.target.checked,
+                          },
+                        })
+                      );
+
+                      backendMessenger.sendSetShowAllModels(e.target.checked);
+                    }}
+                    className="h-4 w-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600"
+                  />
+                </div>
+                <div className="ml-3 text-sm">
+                  <label htmlFor="showAllModels" className="font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                    {API_STRINGS.SHOW_ALL_MODELS}
+                  </label>
+                  <p className="text-gray-500 dark:text-gray-400 mt-1">
+                    {API_STRINGS.SHOW_ALL_MODELS_DESCRIPTION}
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Manual model input checkbox */}
+            {selectedTool?.manualModelInput && (
+              <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-5 border border-gray-200 dark:border-gray-700">
+                <div className="flex items-start">
+                  <div className="flex h-5 items-center">
+                    <input
+                      type="checkbox"
+                      id="manualModelInput"
+                      checked={settings.manualModelInput}
+                      onChange={(e) => {
+                        dispatch(
+                          setExtensionSettings({
+                            newSettings: {
+                              ...settings,
+                              manualModelInput: e.target.checked,
+                            },
+                          })
+                        );
+
+                        backendMessenger.sendSetManualModelInput(e.target.checked);
+                      }}
+                      className="h-4 w-4 rounded text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600"
+                    />
+                  </div>
+                  <div className="ml-3 text-sm">
+                    <label htmlFor="manualModelInput" className="font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                      {API_STRINGS.MANUAL_MODEL_INPUT}
+                    </label>
+                    <p className="text-gray-500 dark:text-gray-400 mt-1">
+                      {API_STRINGS.MANUAL_MODEL_INPUT_HINT}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
