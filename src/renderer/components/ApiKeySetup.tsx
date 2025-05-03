@@ -127,8 +127,8 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
    * Checks if an API key error should be displayed
    */
   const isApiKeyError = (): boolean => {
-    return apiKeyStatus === ApiKeyStatus.Invalid &&
-      !!apiUrlInputRef.current?.value.length;
+    return (apiKeyStatus === ApiKeyStatus.Invalid &&
+      !!apiUrlInputRef.current?.value.length);
   };
 
   /**
@@ -220,7 +220,7 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
    * Renders the API key error message if applicable
    */
   const renderApiKeyError = (): ReactElement | null => {
-    if (!isApiKeyError()) return null;
+    if (!isApiKeyError()) { return null; }
 
     return (
       <div
@@ -251,7 +251,7 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
    * Renders the alternative API URL input if enabled
    */
   const renderApiUrlInput = (): ReactElement | null => {
-    if (!showApiUrl) return null;
+    if (!showApiUrl) { return null; }
 
     return (
       <div>
