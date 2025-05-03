@@ -1,5 +1,4 @@
 import React, { ReactElement, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../hooks";
 import { useMessenger } from "../send-to-backend";
 import { RootState } from "../store";
@@ -44,9 +43,9 @@ const API_STRINGS = {
   PRICING_INFO: {
     TITLE: "Note: OpenAI API has costs associated with it",
     DESCRIPTION: "If you're not already aware - OpenAI's API does have costs associated with it. However, new accounts do receive a $5 credit to get started. When you ask a question in this extension, it will likely cost a fraction of a cent in API usage.",
-    EXAMPLE_PART1: "For example if all of the text in this extension window was from ai, it would've cost",
-    EXAMPLE_PART2: "in API usage on GPT-3.5-turbo. Beware if you use OpenAI's, GPT-4, it is",
-    EXAMPLE_PART3: "more expensive than GPT-3.5-turbo at",
+    EXAMPLE_PART1: "For example if all of the text in this extension window was from AI, it would've cost approximately",
+    EXAMPLE_PART2: "in API usage on GPT-3.5-turbo. Be aware that if you use OpenAI's GPT-4, it is significantly",
+    EXAMPLE_PART3: "more expensive than GPT-3.5-turbo, potentially costing around",
     MORE_DETAILS: "View openai.com/pricing for more details",
   },
 };
@@ -64,14 +63,14 @@ interface ApiKeySetupProps {
 
 /**
  * Component for setting up the OpenAI API key
- * 
+ *
  * Features:
  * - API key input with secure storage
  * - Alternative API URL configuration
  * - Instructions for obtaining an API key
  * - Error handling for invalid API keys
  * - Pricing information
- * 
+ *
  * @param props - Component properties
  * @returns React component
  */
@@ -142,71 +141,99 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
    * Renders the instructions section
    */
   const renderInstructions = (): ReactElement => (
-    <div className="bg-gray-50 dark:bg-gray-800/30 rounded-lg p-6 shadow-sm">
-      <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center">
-        <Icon name={IconName.Help} className="w-5 h-5 mr-2 text-blue-500" />
-        {API_STRINGS.INSTRUCTIONS.TITLE}
+    <div
+      className="flex flex-col gap-2 p-6 bg-blue-500/5 border border-blue-200 dark:border-blue-900 rounded-lg shadow-sm"
+      role="region"
+      aria-labelledby="instructionsTitle"
+    >
+      <h2 id="instructionsTitle" className="font-medium flex items-center text-blue-800 dark:text-blue-300">
+        <Icon name={IconName.Settings} className="w-5 h-5 mr-2 text-blue-500" />
+        How to Set Up Your OpenAI API Key
       </h2>
-      <ol className="list-decimal list-inside space-y-3 text-gray-700 dark:text-gray-300">
-        <li className="flex items-center">
-          <span className="mr-2">1.</span>
-          <div>
-            {API_STRINGS.INSTRUCTIONS.STEP1}{" "}
+
+      <div className="mt-2 space-y-4">
+        <div className="flex items-start">
+          <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 mr-3 font-medium text-sm">
+            1
+          </div>
+          <div className="text-gray-700 dark:text-gray-300">
+            Create an OpenAI account at{" "}
             <a
               href="https://platform.openai.com"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="OpenAI Platform"
-              className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline transition-colors"
+              className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
             >
-              https://platform.openai.com
+              platform.openai.com
+              <Icon name={IconName.ChevronRight} className="w-3.5 h-3.5 ml-1" />
             </a>
           </div>
-        </li>
-        <li className="flex items-center">
-          <span className="mr-2">2.</span>
-          <div>
-            {API_STRINGS.INSTRUCTIONS.STEP2}{" "}
+        </div>
+
+        <div className="flex items-start">
+          <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 mr-3 font-medium text-sm">
+            2
+          </div>
+          <div className="text-gray-700 dark:text-gray-300">
+            Navigate to API Keys page at{" "}
             <a
               href="https://platform.openai.com/account/api-keys"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="OpenAI API Keys page"
-              className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline transition-colors"
+              className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
             >
-              https://platform.openai.com/account/api-keys
+              platform.openai.com/account/api-keys
+              <Icon name={IconName.ChevronRight} className="w-3.5 h-3.5 ml-1" />
             </a>
           </div>
-        </li>
-        <li className="flex items-center">
-          <span className="mr-2">3.</span>
-          <div>
-            {API_STRINGS.INSTRUCTIONS.STEP3}
+        </div>
+
+        <div className="flex items-start">
+          <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 mr-3 font-medium text-sm">
+            3
           </div>
-        </li>
-        <li className="flex items-center">
-          <span className="mr-2">4.</span>
-          <div>
-            {API_STRINGS.INSTRUCTIONS.STEP4}
+          <div className="text-gray-700 dark:text-gray-300">
+            Click <span className="inline-flex items-center px-2 py-1 mx-1 text-sm font-medium rounded-md bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">Create new secret key</span> to generate a new API key
           </div>
-        </li>
-        <li className="flex items-start">
-          <span className="mr-2">5.</span>
-          <div>
-            {API_STRINGS.INSTRUCTIONS.STEP5A}{" "}
+        </div>
+
+        <div className="flex items-start">
+          <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 mr-3 font-medium text-sm">
+            4
+          </div>
+          <div className="text-gray-700 dark:text-gray-300">
+            Copy your new key and paste it in the input field below
+          </div>
+        </div>
+
+        <div className="flex items-start">
+          <div className="flex-shrink-0 h-6 w-6 flex items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 mr-3 font-medium text-sm">
+            5
+          </div>
+          <div className="text-gray-700 dark:text-gray-300">
+            Your key is securely stored using VSCode's secret storage and never sent to any server.{" "}
             <a
               href="https://github.com/M31Lab/Mini"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub repository"
-              className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 underline transition-colors"
+              className="inline-flex items-center text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
             >
-              {API_STRINGS.INSTRUCTIONS.STEP5B}
+              View the source code
+              <Icon name={IconName.ChevronRight} className="w-3.5 h-3.5 ml-1" />
             </a>
-            {API_STRINGS.INSTRUCTIONS.STEP5C}
           </div>
-        </li>
-      </ol>
+        </div>
+      </div>
+
+      <div className="mt-4 flex items-start bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3 border border-amber-200 dark:border-amber-800">
+        <Icon name={IconName.AlertTriangle} className="w-5 h-5 text-amber-500 mr-3 mt-0.5 flex-shrink-0" />
+        <p className="text-amber-700 dark:text-amber-300 text-sm">
+          Remember to keep your API key secure. Never share it publicly or commit it to version control.
+        </p>
+      </div>
     </div>
   );
 
@@ -214,31 +241,53 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
    * Renders the API key input field
    */
   const renderApiKeyInput = (): ReactElement => (
-    <div className="bg-white dark:bg-gray-800/40 rounded-lg p-6 shadow-sm">
-      <label htmlFor="apiKey" className="block font-bold mb-2 text-gray-800 dark:text-gray-200 flex items-center">
-        <Icon name={IconName.Settings} className="w-5 h-5 mr-2 text-blue-500" />
+    <div className="bg-indigo-500/5 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-900 rounded-lg p-6 shadow-sm">
+      <label htmlFor="apiKey" className="block font-medium mb-3 text-indigo-800 dark:text-indigo-300 flex items-center">
+        <Icon name={IconName.Settings} className="w-5 h-5 mr-2 text-indigo-500" />
         {API_STRINGS.API_KEY_LABEL}
       </label>
       <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Icon name={IconName.Settings} className="h-5 w-5 text-gray-400 dark:text-gray-500" />
+        </div>
         <input
           type="password"
           id="apiKey"
           value={apiKey}
           onChange={handleApiKeyChange}
           placeholder={API_STRINGS.PLACEHOLDERS.API_KEY}
-          className="w-full px-4 py-3 rounded-md border border-gray-300 dark:border-gray-600 text-input text-sm bg-white dark:bg-gray-800 outline-0 focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all duration-200"
+          className="w-full pl-10 pr-10 py-3 rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 outline-0 focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all duration-200 shadow-sm"
           disabled={isPending()}
           aria-required="true"
           aria-describedby="apiKeyError"
           autoComplete="off"
         />
         {apiKeyStatus === ApiKeyStatus.Valid && (
-          <div className="absolute top-1/2 -translate-y-1/2 right-3 text-green-500">
-            <Icon name={IconName.Check} className="w-5 h-5" />
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <div className="text-green-500 bg-green-100 dark:bg-green-900/30 p-1 rounded-full">
+              <Icon name={IconName.Check} className="w-4 h-4" />
+            </div>
+          </div>
+        )}
+        {apiKeyStatus === ApiKeyStatus.Invalid && (
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <div className="text-red-500 bg-red-100 dark:bg-red-900/30 p-1 rounded-full">
+              <Icon name={IconName.Cancel} className="w-4 h-4" />
+            </div>
+          </div>
+        )}
+        {apiKeyStatus === ApiKeyStatus.Pending && (
+          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <div className="text-amber-500 bg-amber-100 dark:bg-amber-900/30 p-1 rounded-full animate-pulse">
+              <Icon name={IconName.Refresh} className="w-4 h-4" />
+            </div>
           </div>
         )}
       </div>
       {isApiKeyError() && renderApiKeyError()}
+      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+        Enter your OpenAI API key above. The key starts with "sk-".
+      </p>
     </div>
   );
 
@@ -310,34 +359,31 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
    * Renders the action buttons
    */
   const renderActionButtons = (): ReactElement => (
-    <div className="flex gap-x-4 justify-end mt-8">
-      {!showApiUrl && (
-        <Link
-          to="/api"
-          className="rounded-md px-5 py-3 flex flex-row items-center text-button-secondary bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 focus:bg-gray-300 dark:focus:bg-gray-600 transition-colors duration-200"
-          aria-label="Configure alternative API"
-          onClick={() => setShowApiUrl(true)}
-        >
-          <Icon name={IconName.Settings} className="w-4 h-4 mr-2" />
-          {API_STRINGS.BUTTONS.USING_ALT_API}
-        </Link>
-      )}
+    <div className="flex flex-col md:flex-row gap-3 mt-6">
       <button
+        type="button"
+        className="bg-white hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700 px-5 py-3 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium flex-1 flex justify-center items-center transition-colors duration-200 shadow-sm"
+        onClick={() => setShowApiUrl(!showApiUrl)}
+      >
+        <Icon name={IconName.Box} className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" />
+        {API_STRINGS.BUTTONS.USING_ALT_API}
+      </button>
+      <button
+        type="button"
+        disabled={isPending() || !apiKey}
+        className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 disabled:opacity-50 disabled:hover:from-blue-500 disabled:hover:to-indigo-600 px-5 py-3 rounded-md text-sm font-medium text-white flex-1 flex justify-center items-center transition-all duration-200 shadow-md"
         onClick={handleSubmit}
-        className="ask-button rounded-md px-5 py-3 flex flex-row items-center bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transition-all duration-200 focus:ring-2 focus:ring-blue-500/50 focus:outline-none"
-        disabled={isPending()}
-        aria-busy={isPending()}
       >
         {isPending() ? (
-          <span className="flex items-center gap-2">
-            <span>{API_STRINGS.BUTTONS.SETTING_API_KEY}</span>
-            <Icon name={IconName.Wave} className="w-4 h-4 ml-2 animate-pulse" />
-          </span>
+          <>
+            <div className="mr-2 h-4 w-4 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+            {API_STRINGS.BUTTONS.SETTING_API_KEY}
+          </>
         ) : (
-          <span className="flex items-center gap-2">
-            <Icon name={IconName.Check} className="w-4 h-4" />
-            <span>{API_STRINGS.BUTTONS.SET_API_KEY}</span>
-          </span>
+          <>
+            <Icon name={IconName.Settings} className="w-4 h-4 mr-2" />
+            {API_STRINGS.BUTTONS.SET_API_KEY}
+          </>
         )}
       </button>
     </div>
@@ -348,33 +394,42 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
    */
   const renderPricingInfo = (): ReactElement => (
     <div
-      className="flex flex-col gap-2 p-6 mt-8 bg-purple-500/5 border border-purple-200 dark:border-purple-900 rounded-lg shadow-sm"
+      className="flex flex-col gap-4 p-6 mt-8 bg-purple-500/5 border border-purple-200 dark:border-purple-900 rounded-lg shadow-sm"
       role="region"
       aria-labelledby="pricingInfoTitle"
     >
-      <h2 id="pricingInfoTitle" className="font-medium flex items-center text-purple-800 dark:text-purple-300">
-        <Icon name={IconName.Zap} className="w-5 h-5 mr-2 text-purple-500" />
-        {API_STRINGS.PRICING_INFO.TITLE}
-      </h2>
-      <p className="text-gray-700 dark:text-gray-300">
-        {API_STRINGS.PRICING_INFO.DESCRIPTION}
-      </p>
-      <p className="text-gray-700 dark:text-gray-300 flex flex-wrap items-center">
-        <span>{API_STRINGS.PRICING_INFO.EXAMPLE_PART1}</span>{" "}
-        <span className="inline-flex items-center px-2 py-1 mx-1 text-sm font-mono font-medium rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">$0.00054</span>{" "}
-        <span>{API_STRINGS.PRICING_INFO.EXAMPLE_PART2}</span>{" "}
-        <span className="inline-flex items-center px-2 py-1 mx-1 text-sm font-medium rounded-md bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 font-mono underline">30x</span>{" "}
-        <span>{API_STRINGS.PRICING_INFO.EXAMPLE_PART3}</span>{" "}
-        <span className="inline-flex items-center px-2 py-1 mx-1 text-sm font-mono font-medium rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">$0.01848</span>.
-      </p>
+      <div className="flex items-center gap-3">
+        <div className="flex-shrink-0 p-2 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400">
+          <Icon name={IconName.Zap} className="w-5 h-5" />
+        </div>
+        <h2 id="pricingInfoTitle" className="font-medium text-lg text-purple-800 dark:text-purple-300">
+          {API_STRINGS.PRICING_INFO.TITLE}
+        </h2>
+      </div>
+
+      <div className="text-gray-700 dark:text-gray-300 space-y-3">
+        <p>{API_STRINGS.PRICING_INFO.DESCRIPTION}</p>
+
+        <div className="bg-purple-50 dark:bg-purple-900/20 p-4 rounded-lg border border-purple-100 dark:border-purple-800">
+          <p className="flex flex-wrap items-center gap-1">
+            <span>{API_STRINGS.PRICING_INFO.EXAMPLE_PART1}</span>
+            <span className="inline-flex items-center px-2 py-1 text-sm font-mono font-medium rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">$0.00054</span>
+            <span>{API_STRINGS.PRICING_INFO.EXAMPLE_PART2}</span>
+            <span className="inline-flex items-center px-2 py-1 text-sm font-medium rounded-md bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300 font-mono">30x</span>
+            <span>{API_STRINGS.PRICING_INFO.EXAMPLE_PART3}</span>
+            <span className="inline-flex items-center px-2 py-1 text-sm font-mono font-medium rounded-md bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">$0.01848</span>.
+          </p>
+        </div>
+      </div>
+
       <a
         href="https://openai.com/pricing"
-        className="underline text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 transition-colors flex items-center mt-2"
+        className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors flex items-center mt-1 text-sm font-medium"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="OpenAI pricing page"
       >
-        <Icon name={IconName.Help} className="w-4 h-4 mr-2" />
+        <Icon name={IconName.Box} className="w-4 h-4 mr-2" />
         {API_STRINGS.PRICING_INFO.MORE_DETAILS}
       </a>
     </div>

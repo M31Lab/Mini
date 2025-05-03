@@ -107,11 +107,11 @@ export default function Chat({
   const configureMarkedOptions = (): void => {
     const markedInstance = (window as any)?.marked;
     const highlightInstance = (window as any).hljs;
-    
+
     if (markedInstance) {
       markedInstance.setOptions({
         renderer: new markedInstance.Renderer(),
-        highlight: (code: string, _lang: string): string => 
+        highlight: (code: string, _lang: string): string =>
           highlightInstance.highlightAuto(code).value,
         langPrefix: "hljs language-",
         pedantic: false,
@@ -137,10 +137,10 @@ export default function Chat({
     if (conversationListRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = conversationListRef.current;
       const isAtBottom = scrollTop >= scrollHeight - clientHeight;
-      const shouldToggleAutoscroll = 
+      const shouldToggleAutoscroll =
         (scrollTop < scrollHeight - clientHeight && conversation.autoscroll) ||
         (!conversation.autoscroll && isAtBottom);
-      
+
       if (shouldToggleAutoscroll) {
         dispatch(
           setAutoscroll({
@@ -165,22 +165,50 @@ export default function Chat({
   useEffect(attachScrollListener, [conversationListRef.current]);
 
   return (
-    <div className="w-full overflow-y-auto flex-grow">
+    <div className="w-full overflow-y-auto flex-grow relative bg-gradient-to-b from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+      {/* Background pattern - subtle geometric shapes */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-5">
+        <div className="absolute top-0 left-0 w-full h-full">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+              <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="1" />
+              </pattern>
+              <pattern id="circle-pattern" width="100" height="100" patternUnits="userSpaceOnUse">
+                <circle cx="50" cy="50" r="20" fill="none" stroke="currentColor" strokeWidth="0.5" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid-pattern)" />
+            <rect width="100%" height="100%" fill="url(#circle-pattern)" />
+          </svg>
+        </div>
+      </div>
+
+      {/* Debug information if enabled */}
       {debug && <DebugComponent conversation={conversation} />}
-      <IntroductionSplash
-        className={conversation.messages?.length > 0 ? "hidden" : ""}
-        vscode={vscode}
-      />
-      <MessageList
-        conversation={conversation}
-        conversationListRef={conversationListRef}
-        vscode={vscode}
-      />
-      <QuestionInputField
-        conversation={conversation}
-        vscode={vscode}
-        conversationList={conversationList}
-      />
+
+      {/* Main content container with improved spacing */}
+      <div className="relative z-10 max-w-5xl mx-auto px-4 py-6">
+        {/* Introduction splash when no messages */}
+        <IntroductionSplash
+          className={conversation.messages?.length > 0 ? "hidden" : ""}
+          vscode={vscode}
+        />
+
+        {/* Message list with improved layout */}
+        <MessageList
+          conversation={conversation}
+          conversationListRef={conversationListRef}
+          vscode={vscode}
+        />
+
+        {/* Question input at the bottom */}
+        <QuestionInputField
+          conversation={conversation}
+          vscode={vscode}
+          conversationList={conversationList}
+        />
+      </div>
     </div>
   );
 }

@@ -19,11 +19,7 @@ import {
 } from "../store/conversation";
 import { Conversation, MODEL_TOKEN_LIMITS } from "../types";
 import Icon, { IconName } from "./Icon";
-import ModelInput from "./ModelInput";
-import ModelSelect from "./ModelSelect";
-import MoreActionsMenu from "./MoreActionsMenu";
 import TokenCountPopup from "./TokenCountPopup";
-import VerbositySelect from "./VerbositySelect";
 
 const INPUT_STRINGS = {
   THINKING: "Thinking...",
@@ -56,9 +52,14 @@ const QuestionInputField = ({
   const settings = useAppSelector(
     (state: RootState) => state.app.extensionSettings
   );
+  const viewOptions = useAppSelector(
+    (state: RootState) => state.app.viewOptions
+  );
   const questionInputRef = React.useRef<HTMLTextAreaElement>(null);
   const [showMoreActions, setShowMoreActions] = useState<boolean>(false);
-  const [useEditorSelection, setIncludeEditorSelection] = useState<boolean>(false);
+  const useEditorSelection = useAppSelector(
+    (state: RootState) => state.app.useEditorSelection
+  );
   const [showTokenBreakdown, setShowTokenBreakdown] = useState<boolean>(false);
   const tokenCountRef = React.useRef<HTMLDivElement>(null);
   const [tokenCountLabel, setTokenCountLabel] = useState<string>("0");
@@ -87,10 +88,6 @@ const QuestionInputField = ({
     models,
     currentConversation?.model
   );
-
-  useEffect((): void => {
-    dispatch(setUseEditorSelection(useEditorSelection));
-  }, [useEditorSelection, dispatch]);
 
   useEffect((): (() => void) => {
     if (tokenCountAnimationTimer.current) {
@@ -156,7 +153,7 @@ const QuestionInputField = ({
       );
 
       if (useEditorSelection) {
-        setIncludeEditorSelection(false);
+        dispatch(setUseEditorSelection(false));
       }
 
       if (questionInputRef?.current?.parentNode) {
@@ -258,10 +255,8 @@ const QuestionInputField = ({
     }
   };
 
-  const handleEditorSelectionToggle = (e: React.MouseEvent<HTMLButtonElement>): void => {
-    e.preventDefault();
-    questionInputRef?.current?.focus();
-    setIncludeEditorSelection(!useEditorSelection);
+  const handleEditorSelectionToggle = (): void => {
+    dispatch(setUseEditorSelection(!useEditorSelection));
   };
 
   const handleTokenCountMouseEnter = (): void => {
@@ -436,94 +431,43 @@ const QuestionInputField = ({
 
   return (
     <footer
-      className={`fixed z-20 bottom-0 w-full flex flex-col gap-y-2 pt-3 
-        bg-gradient-to-t from-bg via-bg/95 to-transparent backdrop-blur-sm
-        ${settings?.minimalUI ? "pb-3" : "pb-2"}
-        border-t border-gray-200 dark:border-gray-700
+      className={`fixed z-20 bottom-0 w-full flex flex-col gap-y-2 pt-4 pb-6
+        bg-gradient-to-t from-white via-white/98 to-white/80 dark:from-gray-900 dark:via-gray-900/98 dark:to-gray-900/80
+        backdrop-blur-md
+        ${settings?.minimalUI ? "pb-6" : "pb-6"}
       `}
     >
-      <div className="px-4 flex items-center gap-x-3">
-        <div className="bg flex-1 textarea-wrapper w-full flex items-center rounded-lg overflow-hidden border border-gray-300 dark:border-gray-600 focus-within:border-blue-400 dark:focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 dark:focus-within:ring-blue-900/30 transition-all duration-200 shadow-sm">
-          {currentConversation.inProgress ? renderThinkingState() : renderQuestionInput()}
-        </div>
+      <div className="max-w-5xl mx-auto w-full px-6 relative">
+        <div className="absolute top-0 left-10 right-10 h-px bg-gradient-to-r from-transparent via-gray-300 dark:via-gray-700 to-transparent"></div>
 
-        <div className="bg" id="question-input-buttons">
-          {currentConversation.inProgress ?
-            renderStopButton() :
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg blur opacity-0 group-hover:opacity-20 transition duration-200"></div>
-              {renderAskButton()}
+        <div className="relative">
+          <div className="absolute -inset-1.5 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl blur-md"></div>
+          <div className="relative bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div className="flex items-stretch">
+              <div className="bg flex-1 textarea-wrapper w-full flex items-center rounded-l-xl overflow-hidden transition-all duration-200">
+                {currentConversation.inProgress ? renderThinkingState() : renderQuestionInput()}
+              </div>
+
+              <div className="flex items-center">
+                <div className="h-8 w-px bg-gradient-to-b from-transparent via-gray-300 dark:via-gray-700 to-transparent mx-0.5"></div>
+                <div className="m-1.5" id="question-input-buttons">
+                  {currentConversation.inProgress ?
+                    renderStopButton() :
+                    <div className="relative group transition-all duration-200">
+                      <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg blur opacity-10 group-hover:opacity-30 transition-all duration-300"></div>
+                      {renderAskButton()}
+                    </div>
+                  }
+                </div>
+              </div>
             </div>
-          }
+          </div>
         </div>
       </div>
-      {!settings?.minimalUI && (
-        <div className="flex flex-wrap xs:flex-nowrap flex-row justify-between gap-x-2 px-4 overflow-x-auto">
-          <div className="flex-grow flex flex-nowrap xs:flex-wrap flex-row gap-2">
-            {showModelSelect && (
-              <div className="relative">
-                {settings.manualModelInput ? (
-                  <ModelInput
-                    currentConversation={currentConversation}
-                    vscode={vscode}
-                    className="hidden xs:flex items-end hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors duration-200"
-                    tooltipId="footer-tooltip"
-                  />
-                ) : (
-                  <ModelSelect
-                    currentConversation={currentConversation}
-                    vscode={vscode}
-                    conversationList={conversationList}
-                    className="hidden xs:flex items-end hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors duration-200"
-                    tooltipId="footer-tooltip"
-                  />
-                )}
-              </div>
-            )}
 
-            {showVerbosity && (
-              <VerbositySelect
-                currentConversation={currentConversation}
-                vscode={vscode}
-                className="hidden xs:flex items-end hover:bg-gray-100 dark:hover:bg-gray-800 rounded transition-colors duration-200"
-                tooltipId="footer-tooltip"
-              />
-            )}
-
-            {showEditorSelection && (
-              <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded opacity-0 group-hover:opacity-20 transition duration-200"></div>
-                {renderEditorSelectionButton()}
-              </div>
-            )}
-
-            {showClear && (
-              <div className="relative group">
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500 to-orange-600 rounded opacity-0 group-hover:opacity-20 transition duration-200"></div>
-                {renderClearButton()}
-              </div>
-            )}
-
-            <Tooltip id="footer-tooltip" place="top" delayShow={800} />
-          </div>
-          <div className="flex flex-row items-start gap-2">
-            {showTokenCount && renderTokenCounter()}
-            <div className="relative group">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-indigo-600 rounded opacity-0 group-hover:opacity-20 transition duration-200"></div>
-              {renderMoreActionsButton()}
-            </div>
-          </div>
-          <div className="flex items-end self-start">
-            <MoreActionsMenu
-              vscode={vscode}
-              showMoreActions={showMoreActions}
-              currentConversation={currentConversation}
-              setShowMoreActions={setShowMoreActions}
-              conversationList={conversationList}
-            />
-          </div>
-        </div>
-      )}
+      <Tooltip id="clear-tooltip" />
+      <Tooltip id="editor-tooltip" />
+      <Tooltip id="model-selection-tooltip" />
     </footer>
   );
 };
