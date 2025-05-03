@@ -1,32 +1,22 @@
 import React, { ReactElement, useCallback, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "../hooks";
-import { removeConversation } from "../store/conversation";
 import { Conversation } from "../types";
 import Icon, { IconName } from "./Icon";
 
-interface Tab {
-  name: string;
-  href: string;
-}
-
 interface TabsDropdownProps {
-  tabs: Tab[];
-  currentConversation: Conversation;
-  navigate: (href: string) => void;
   conversationList: Conversation[];
   createNewConversation: () => void;
   className?: string;
 }
 
 const TabsDropdown = ({
-  tabs,
-  currentConversation,
-  navigate,
   conversationList,
   createNewConversation,
   className,
 }: TabsDropdownProps): ReactElement => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const selectedTabRef = useRef<HTMLButtonElement>(null);
   const selectRef = useRef<HTMLButtonElement>(null);
   const parentRef = useRef<HTMLDivElement>(null);
@@ -43,74 +33,53 @@ const TabsDropdown = ({
   }, []);
 
   const handleSelectChange = useCallback(
-    (selectedTab: Tab): void => {
-      if (selectedTab) {
-        navigate(selectedTab.href);
+    (selectedConversation: Conversation): void => {
+      if (selectedConversation) {
+        navigate(`/chat/${encodeURI(selectedConversation.id)}`);
         setShowOptions(false);
       }
     },
     [navigate]
   );
 
-  const handleCloseTab = (e: React.MouseEvent): void => {
-    e.stopPropagation();
-
-    if (conversationList.length === 1) {
-      createNewConversation();
-    } else {
-      const nextTabId = conversationList[0].id === currentConversation.id
-        ? conversationList[1].id
-        : conversationList[0].id;
-
-      navigate(`/chat/${encodeURI(nextTabId)}`);
-    }
-
-    dispatch(removeConversation(currentConversation.id));
-  };
-
-  const currentTabName = tabs.find(
-    (tab) => currentConversation.title === tab.name
-  )?.name;
-
   return (
     <div className={`relative ${className}`} ref={parentRef}>
       <button
-        className="flex-grow w-full flex items-center px-2 py-1 border-b border-tab-inactive/30 text-[9px] cursor-pointer hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] focus:outline-none"
+        className="h-full flex items-center px-1.5 py-0.5 text-[10px] cursor-pointer text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-[rgba(0,0,0,0.01)] dark:hover:bg-[rgba(255,255,255,0.01)] focus:outline-none transition-colors"
         onClick={handleToggleOptions}
         ref={selectRef}
+        title="Browse chats"
       >
-        <span className="pl-1 flex-grow user-select-none text-start text-gray-700 dark:text-gray-300">
-          {currentTabName}
-        </span>
-        <Icon name={IconName.CaretDown} className="w-4 h-4 p-1 text-gray-500" />
-        <button
-          type="button"
-          className="block p-0.5 hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] focus:outline-none rounded-sm text-gray-500"
-          onClick={handleCloseTab}
-        >
-          <Icon name={IconName.Close} className="w-3 h-3" />
-        </button>
+        <Icon name={IconName.More} className="w-3 h-3" />
       </button>
       {showOptions && (
         <div
-          className="absolute z-10 w-full bg-[rgba(0,0,0,0.02)] dark:bg-[rgba(255,255,255,0.02)] border border-tab-inactive/30 max-h-60 overflow-auto top-7 left-0"
+          className="absolute z-10 w-48 bg-white dark:bg-gray-900 border border-tab-inactive/30 rounded-sm shadow-sm max-h-60 overflow-auto right-0 mt-1"
           role="menu"
         >
-          {tabs.map((tab, index) => (
+          <div className="py-1 text-[11px] text-gray-700 dark:text-gray-300 font-medium px-2 border-b border-tab-inactive/20">
+            Chats
+          </div>
+          {conversationList.map((conversation, index) => (
             <button
               key={index}
               role="menuitem"
-              aria-selected={currentConversation.title === tab.name}
-              onClick={() => handleSelectChange(tab)}
+              onClick={() => handleSelectChange(conversation)}
               ref={selectedTabRef}
-              className={`w-full text-start py-1.5 px-2 text-[9px] hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] focus:bg-[rgba(0,0,0,0.05)] dark:focus:bg-[rgba(255,255,255,0.05)] cursor-pointer appearance-none text-gray-700 dark:text-gray-300 ${currentConversation.title === tab.name
-                ? "bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] font-medium"
-                : ""
-                }`}
+              className="w-full text-start py-1 px-2 text-[11px] hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] focus:bg-[rgba(0,0,0,0.02)] dark:focus:bg-[rgba(255,255,255,0.02)] cursor-pointer appearance-none text-gray-600 dark:text-gray-400 transition-colors"
             >
-              {tab.name}
+              {conversation.title}
             </button>
           ))}
+          <div className="border-t border-tab-inactive/20 pt-1 mt-1">
+            <button
+              className="w-full text-start py-1 px-2 text-[11px] hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] cursor-pointer appearance-none text-gray-600 dark:text-gray-400 transition-colors flex items-center gap-1"
+              onClick={createNewConversation}
+            >
+              <Icon name={IconName.Plus} className="w-2.5 h-2.5" />
+              New chat
+            </button>
+          </div>
         </div>
       )}
     </div>

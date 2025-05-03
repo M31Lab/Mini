@@ -1,5 +1,5 @@
-import { Settings } from "lucide-react";
 import classNames from "classnames";
+import { Settings } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Tooltip } from "react-tooltip";
@@ -93,7 +93,7 @@ const MoreActionsMenu = ({
   const getMenuClasses = (): string => {
     return classNames(
       "MoreActionsMenu",
-      "fixed z-20 right-4 p-2 bg-menu rounded border border-menu overflow-hidden max-w-[calc(100vw-2em)]",
+      "fixed z-20 right-4 p-1.5 bg-white dark:bg-gray-900 rounded-sm border border-tab-inactive/30 overflow-hidden max-w-[calc(100vw-2em)] shadow-sm text-[11px]",
       className,
       {
         hidden: !showMoreActions,
@@ -104,10 +104,10 @@ const MoreActionsMenu = ({
   const getDebugButtonClasses = (): string => {
     return classNames(
       "DebugButton",
-      "rounded flex gap-1 items-center justify-start py-0.5 px-1 w-full",
+      "rounded-sm flex gap-1 items-center justify-start py-0.5 px-1 w-full text-[11px] transition-colors",
       debug
-        ? "bg-red-900 text-white"
-        : "hover:bg-button-secondary focus:bg-button-secondary hover:text-button-secondary focus:text-button-secondary"
+        ? "bg-red-500/10 text-red-600 dark:text-red-400"
+        : "hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] text-gray-600 dark:text-gray-300"
     );
   };
 
@@ -117,38 +117,38 @@ const MoreActionsMenu = ({
         id="more-actions-menu"
         className={getMenuClasses()}
       >
-        <ul className="flex flex-col gap-1">
+        <ul className="flex flex-col gap-0.5">
           <li>
             <a
-              className="flex gap-1 items-center py-0.5 px-1 whitespace-nowrap hover:underline focus-within:underline"
+              className="flex gap-1 items-center py-0.5 px-1 whitespace-nowrap text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors"
               data-tooltip-id="more-actions-tooltip"
               data-tooltip-content={MENU_STRINGS.FEEDBACK_TOOLTIP}
               href="https://github.com/M31Lab/Mini/issues/new/choose"
               target="_blank"
             >
-              <Icon name={IconName.Help} className="w-3 h-3" />
+              <Icon name={IconName.Help} className="w-3 h-3 text-gray-500 dark:text-gray-400" />
               {MENU_STRINGS.FEEDBACK}
             </a>
           </li>
           <li>
             <Link
-              className="rounded flex gap-1 items-center justify-start py-0.5 px-1 w-full hover:bg-button-secondary focus:bg-button-secondary hover:text-button-secondary focus:text-button-secondary"
+              className="rounded-sm flex gap-1 items-center justify-start py-0.5 px-1 w-full text-[11px] text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors"
               to="/api"
               onClick={handleApiLinkClick}
               data-tooltip-id="local-api-tooltip"
               data-tooltip-content={MENU_STRINGS.CHANGE_LLM_TOOLTIP}
             >
-              <Icon name={IconName.Box} className="w-3 h-3" />
+              <Icon name={IconName.Box} className="w-3 h-3 text-gray-500 dark:text-gray-400" />
               {MENU_STRINGS.CHANGE_LLM}
             </Link>
           </li>
           <li>
             <Link
-              className="rounded flex gap-1 items-center justify-start py-0.5 px-1 w-full hover:bg-button-secondary focus:bg-button-secondary hover:text-button-secondary focus:text-button-secondary"
+              className="rounded-sm flex gap-1 items-center justify-start py-0.5 px-1 w-full text-[11px] text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors"
               to="/actions"
               onClick={handleActionsLinkClick}
             >
-              <Icon name={IconName.Zap} className="w-3 h-3" />
+              <Icon name={IconName.Zap} className="w-3 h-3 text-gray-500 dark:text-gray-400" />
               {MENU_STRINGS.ACTIONS}
             </Link>
           </li>
@@ -160,30 +160,30 @@ const MoreActionsMenu = ({
                 data-tooltip-content={MENU_STRINGS.DEBUG_TOOLTIP}
                 onClick={handleDebugToggle}
               >
-                <Icon name={IconName.Box} className="w-3 h-3" />
+                <Icon name={IconName.Box} className="w-3 h-3 text-gray-500 dark:text-gray-400" />
                 {MENU_STRINGS.DEBUG}
               </button>
             </li>
           )}
           <li>
             <button
-              className="rounded flex gap-1 items-center justify-start py-0.5 px-1 w-full hover:bg-button-secondary focus:bg-button-secondary hover:text-button-secondary focus:text-button-secondary"
+              className="rounded-sm flex gap-1 items-center justify-start py-0.5 px-1 w-full text-[11px] text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors"
               onClick={handleOpenSettings}
               data-tooltip-id="more-actions-tooltip"
               data-tooltip-content={MENU_STRINGS.SETTINGS_TOOLTIP}
             >
-              <Icon name={IconName.Settings} className="w-3 h-3" />
+              <Icon name={IconName.Settings} className="w-3 h-3 text-gray-500 dark:text-gray-400" />
               {MENU_STRINGS.SETTINGS}
             </button>
           </li>
           <li>
             <button
-              className="rounded flex gap-1 items-center justify-start py-0.5 px-1 w-full hover:bg-button-secondary focus:bg-button-secondary hover:text-button-secondary focus:text-button-secondary"
+              className="rounded-sm flex gap-1 items-center justify-start py-0.5 px-1 w-full text-[11px] text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors"
               data-tooltip-id="more-actions-tooltip"
               data-tooltip-content={MENU_STRINGS.MARKDOWN_TOOLTIP}
               onClick={handleExportMarkdown}
             >
-              <Icon name={IconName.Download} className="w-3 h-3" />
+              <Icon name={IconName.Download} className="w-3 h-3 text-gray-500 dark:text-gray-400" />
               {MENU_STRINGS.MARKDOWN}
             </button>
           </li>
@@ -192,8 +192,8 @@ const MoreActionsMenu = ({
               className="group w-full"
               onClick={handleViewOptionsToggle}
             >
-              <span className="w-full py-0.5 px-1 rounded flex gap-1 items-center justify-start group-hover:bg-button-secondary group-focus:bg-button-secondary group-hover:text-button-secondary group-focus:text-button-secondary">
-                <Settings className="w-3 h-3" />
+              <span className="w-full py-0.5 px-1 rounded-sm flex gap-1 items-center justify-start text-[11px] text-gray-600 dark:text-gray-300 group-hover:bg-[rgba(0,0,0,0.02)] dark:group-hover:bg-[rgba(255,255,255,0.02)] transition-colors">
+                <Settings className="w-3 h-3 text-gray-500 dark:text-gray-400" />
                 {MENU_STRINGS.VIEW}
               </span>
               {showViewOptions && (
@@ -201,33 +201,29 @@ const MoreActionsMenu = ({
               )}
             </button>
           </li>
-          <li className="block xs:hidden">
+          <li>
             <ModelSelect
               currentConversation={currentConversation}
-              vscode={vscode}
               conversationList={conversationList}
-              dropdownClassName="right-32 bottom-8 max-w-[calc(100vw-9rem)] z-20"
-              tooltipId="more-actions-tooltip"
+              vscode={vscode}
               showParentMenu={setShowMoreActions}
+              dropdownClassName="top-0 right-36"
             />
           </li>
-          <li className="block xs:hidden">
+          <li>
             <VerbositySelect
               currentConversation={currentConversation}
               vscode={vscode}
-              dropdownClassName="right-32 bottom-8 max-w-[calc(100vw-9rem)] z-20"
-              tooltipId="more-actions-tooltip"
               showParentMenu={setShowMoreActions}
+              dropdownClassName="top-0 right-24"
+              className="mt-1 mb-0 mx-0"
             />
           </li>
         </ul>
       </div>
-      <Tooltip
-        id="more-actions-tooltip"
-        className="z-10"
-        place="left"
-        delayShow={800}
-      />
+      {showMoreActions && (
+        <Tooltip id="more-actions-tooltip" />
+      )}
     </>
   );
 };

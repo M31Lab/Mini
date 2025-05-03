@@ -428,7 +428,7 @@ const QuestionInputField = ({
         ${settings?.minimalUI ? "pb-2" : "pb-2"}
       `}
     >
-      <div className="w-full mx-auto px-2 relative">
+      <div className="w-full mx-auto px-2 pr-4 relative">
         <div className="relative">
           <div className="relative bg-input rounded-sm border border-tab-inactive/30 overflow-hidden">
             <div className="flex items-stretch">

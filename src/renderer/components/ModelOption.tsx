@@ -69,35 +69,38 @@ const ModelOption = ({
   return (
     <button
       className={classNames(
-        "group flex flex-col gap-2 items-start justify-start p-2 w-full",
-        "hover:bg-menu-selection hover:text-menu-selection",
-        "focus:bg-menu-selection focus:text-menu-selection",
+        "group flex flex-col gap-1 items-start justify-start py-1.5 px-2 w-full text-left",
+        "hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] text-gray-700 dark:text-gray-300",
+        "transition-colors",
         {
-          "bg-gray-500 bg-opacity-15 border-l-4 border-l-tab-editor-focus":
-            isSelected,
+          "bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] border-l-2 border-l-gray-400/40": isSelected,
         }
       )}
       onClick={handleClick}
     >
-      <span>
-        <code className="group-hover:text-menu-selection group-focus:text-menu-selection">
+      <span className="font-medium text-[11px]">
+        <code className="text-gray-700 dark:text-gray-300 font-mono">
           {model.name}
         </code>
-        {model.recommended && <strong> (recommended)</strong>}
+        {model.recommended && <span className="text-green-600 dark:text-green-400 text-[10px] ml-1">(recommended)</span>}
       </span>
-      <p>
-        Quality: {model.quality}, Speed: {model.speed}, Cost: {model.cost},
-        Context:{" "}
-        <code className="group-hover:text-menu-selection group-focus:text-menu-selection">
-          {MODEL_TOKEN_LIMITS.get(model.id ?? "")?.context}
-        </code>
+      <p className="text-[10px] text-gray-500 dark:text-gray-400">
+        <span className="mr-1">Quality: {model.quality}</span>
+        <span className="mr-1">Speed: {model.speed}</span>
+        <span className="mr-1">Cost: {model.cost}</span>
+        <span>
+          Context:{" "}
+          <code className="text-gray-600 dark:text-gray-400 font-mono">
+            {MODEL_TOKEN_LIMITS.get(model.id ?? "")?.context}
+          </code>
+        </span>
         {MODEL_TOKEN_LIMITS.get(model.id ?? "")?.max && (
-          <>
-            , Completion:{" "}
-            <code className="group-hover:text-menu-selection group-focus:text-menu-selection">
+          <span className="ml-1">
+            Completion:{" "}
+            <code className="text-gray-600 dark:text-gray-400 font-mono">
               {MODEL_TOKEN_LIMITS.get(model.id ?? "")?.max}
             </code>
-          </>
+          </span>
         )}
       </p>
     </button>

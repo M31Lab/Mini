@@ -14,9 +14,9 @@ interface ActionItemProps {
   action: Action;
 }
 
-const ActionItem = ({ 
-  vscode, 
-  action 
+const ActionItem = ({
+  vscode,
+  action
 }: ActionItemProps): ReactElement => {
   const dispatch = useAppDispatch();
   const backendMessenger = useMessenger(vscode);
@@ -46,28 +46,27 @@ const ActionItem = ({
   };
 
   const isRunning = action.state === ActionRunState.running;
-  const buttonClasses = `inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-button-secondary hover:text-button-secondary-hover focus:outline-none focus:ring-2 focus:ring-offset-2
-    ${
-      isRunning
-        ? "bg-transparent border border-red-700 hover:bg-red-700 hover:text-white"
-        : "bg-button-secondary hover:bg-button-secondary-hover "
+  const buttonClasses = `inline-flex items-center px-2 py-1 text-[11px] font-medium rounded-sm text-gray-600 dark:text-gray-300 bg-[rgba(0,0,0,0.01)] dark:bg-[rgba(255,255,255,0.01)] border border-tab-inactive/30 hover:bg-[rgba(0,0,0,0.03)] dark:hover:bg-[rgba(255,255,255,0.03)] focus:outline-none transition-colors
+    ${isRunning
+      ? "border-red-700/30 hover:border-red-700/50 text-red-600 dark:text-red-400"
+      : "hover:text-gray-800 dark:hover:text-gray-100"
     }`;
 
   return (
-    <div className="relative flex items-center space-x-3 px-6 py-3 focus-within:ring-2 focus-within:ring-inset hover:bg-menu">
+    <div className="relative flex items-center px-3 py-2 hover:bg-[rgba(0,0,0,0.01)] dark:hover:bg-[rgba(255,255,255,0.01)] transition-colors">
       <div className="min-w-0 flex-1 flex sm:flex-row flex-col gap-2">
         <header className="flex flex-col flex-1">
-          <h3 className="text-md font-medium text-menu my-0">{action.name}</h3>
-          <p className="truncate text-xs text my-0 opacity-75">
+          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 my-0">{action.name}</h3>
+          <p className="truncate text-[11px] text-gray-500 dark:text-gray-400 my-0">
             {action.description}
           </p>
           {action.error && (
-            <div className="py-1 px-2 bg-red-600 bg-opacity-20 text mt-2 rounded">
+            <div className="py-1 px-2 mt-1.5 rounded-sm bg-[rgba(255,0,0,0.05)] border border-red-700/20">
               <header className="flex justify-between items-center">
-                <p className="font-bold">{action.error}</p>
+                <p className="text-[11px] text-red-600 dark:text-red-400">{action.error}</p>
                 <button
                   type="button"
-                  className="inline-flex items-center px-2.5 py-1.5 text-xs font-medium rounded text-button-secondary bg-button-secondary hover:bg-button-secondary-hover hover:text-button-secondary-hover focus:outline-none focus:ring-2 focus:ring-offset-2"
+                  className="px-1.5 py-0.5 text-[10px] font-medium rounded-sm text-gray-600 dark:text-gray-300 bg-[rgba(0,0,0,0.01)] dark:bg-[rgba(255,255,255,0.01)] hover:bg-[rgba(0,0,0,0.03)] dark:hover:bg-[rgba(255,255,255,0.03)] border border-tab-inactive/30 transition-colors"
                   onClick={handleHideError}
                 >
                   Hide
@@ -76,25 +75,21 @@ const ActionItem = ({
             </div>
           )}
         </header>
-        <div className="">
+        <div className="flex items-start">
           <button
             type="button"
             className={buttonClasses}
             onClick={handleClick}
           >
             {isRunning ? (
-              <div className="flex gap-x-2">
-                <div className="flex items-center justify-center text-blue-500">
-                  <Icon name={IconName.Refresh} className="animate-spin h-4 w-4" />
-                </div>
-                Stop
+              <div className="flex gap-x-1.5 items-center">
+                <Icon name={IconName.Refresh} className="animate-spin h-3 w-3 text-red-500 dark:text-red-400" />
+                <span>Stop</span>
               </div>
             ) : (
-              <div className="flex gap-x-2">
-                Run
-                <div className="flex items-center justify-center text-blue-500">
-                  <Icon name={IconName.Send} className="h-4 w-4" />
-                </div>
+              <div className="flex gap-x-1.5 items-center">
+                <span>Run</span>
+                <Icon name={IconName.Send} className="h-3 w-3 text-gray-500 dark:text-gray-400" />
               </div>
             )}
           </button>

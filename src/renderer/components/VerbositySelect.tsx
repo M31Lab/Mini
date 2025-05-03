@@ -1,7 +1,6 @@
-import React, { useState, ReactElement } from "react";
-import { useAppDispatch, useAppSelector } from "../hooks";
+import React, { ReactElement, useState } from "react";
+import { useAppDispatch } from "../hooks";
 import { useMessenger } from "../send-to-backend";
-import { RootState } from "../store";
 import { setVerbosity } from "../store/conversation";
 import { Conversation, Verbosity } from "../types";
 import Icon, { IconName } from "./Icon";
@@ -77,23 +76,23 @@ const VerbositySelect = ({
         data-tooltip-content="Change the verbosity of the AI's responses"
       >
         <button
-          className="rounded py-0.5 px-1 flex flex-row items-center hover:bg-button-secondary focus:bg-button-secondary whitespace-nowrap hover:text-button-secondary focus:text-button-secondary"
+          className="rounded-sm py-0.5 px-1 flex items-center text-[11px] text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] whitespace-nowrap transition-colors"
           onClick={toggleOptions}
         >
-          <Icon name={IconName.Chat} className="w-3 h-3 mr-1" />
+          <Icon name={IconName.Chat} className="w-3 h-3 mr-1 text-gray-500 dark:text-gray-400" />
           {getHumanFriendlyLabel(
             currentConversation?.verbosity ?? Verbosity.normal
           )}
         </button>
         <div
-          className={`fixed border text-menu bg-menu border-menu shadow-xl text-xs rounded z-10
+          className={`fixed border border-tab-inactive/30 text-gray-700 dark:text-gray-300 bg-[rgba(0,0,0,0.01)] dark:bg-[rgba(255,255,255,0.01)] shadow-sm text-[11px] rounded-sm z-10
           ${showOptions ? "block" : "hidden"}
           ${dropdownClassName ? dropdownClassName : "mb-8 -ml-11"}
         `}
         >
           {Object.values(Verbosity).map((option) => (
             <button
-              className="flex gap-2 items-center justify-start p-2 w-full hover:bg-menu-selection"
+              className="flex gap-2 items-center justify-start py-1.5 px-2 w-full hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] transition-colors"
               key={option}
               onClick={() => handleVerbositySelection(option)}
             >

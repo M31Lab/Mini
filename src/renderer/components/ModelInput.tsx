@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import React, { useState, ReactElement, ChangeEvent } from "react";
+import React, { ChangeEvent, ReactElement, useState } from "react";
 import { useAppDispatch } from "../hooks";
 import { useMessenger } from "../send-to-backend";
 import { updateConversationModel } from "../store/conversation";
@@ -59,7 +59,7 @@ const ModelInput = ({
     <>
       <div className={classNames(className, "relative")}>
         <button
-          className="rounded py-0.5 px-1 flex flex-row items-center hover:bg-button-secondary focus:bg-button-secondary whitespace-nowrap"
+          className="rounded-sm py-0.5 px-1 flex items-center text-[11px] text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] whitespace-nowrap transition-colors"
           onClick={togglePopup}
           data-tooltip-id={tooltipId ?? "footer-tooltip"}
           data-tooltip-content="Enter model ID manually"
@@ -69,22 +69,22 @@ const ModelInput = ({
 
         <div
           className={classNames(
-            "fixed mb-8 overflow-y-auto max-h-[calc(100%-7em)] items-center more-menu border text-menu bg-menu border-menu shadow-xl text-xs rounded",
+            "fixed mb-8 overflow-y-auto max-h-[calc(100%-7em)] items-center border border-tab-inactive/30 bg-white dark:bg-gray-900 shadow-sm text-[11px] rounded-sm",
             { block: showPopup, hidden: !showPopup },
             dropdownClassName ? dropdownClassName : "left-4 z-10"
           )}
         >
-          <div className="w-full flex gap-2 p-2">
+          <div className="w-full flex gap-1.5 p-1.5">
             <input
               type="text"
               placeholder="Enter Model ID"
               value={modelId}
               onChange={handleModelChange}
-              className="px-3 py-2 rounded-sm border text-input text-sm border-input bg-menu-selection outline-0"
+              className="px-2 py-1 rounded-sm border border-tab-inactive/40 text-gray-700 dark:text-gray-300 text-[11px] bg-[rgba(0,0,0,0.01)] dark:bg-[rgba(255,255,255,0.01)] outline-0 focus:border-tab-inactive/60"
             />
             <button
               onClick={handleModelSubmit}
-              className="w-full px-3 py-2 bg-button-secondary hover:bg-button-primary text-white rounded"
+              className="px-2 py-1 bg-[rgba(0,0,0,0.02)] hover:bg-[rgba(0,0,0,0.04)] dark:bg-[rgba(255,255,255,0.02)] dark:hover:bg-[rgba(255,255,255,0.04)] text-gray-700 dark:text-gray-300 text-[11px] rounded-sm border border-tab-inactive/30 transition-colors"
             >
               Submit
             </button>

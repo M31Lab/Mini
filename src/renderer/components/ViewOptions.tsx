@@ -44,12 +44,12 @@ const ViewOptionsToggle = ({
   const renderOptionButton = (option: ViewOption): ReactElement => (
     <li key={option.key}>
       <button
-        className="w-full flex gap-1 items-center py-0.5 px-1 text-xs whitespace-nowrap hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] rounded-sm"
+        className="w-full flex gap-1 items-center py-0.5 px-1 text-[11px] whitespace-nowrap text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] rounded-sm transition-colors"
         onClick={() => handleOptionToggle(option.key)}
       >
         <Icon
           name={viewOptionStates[option.key] ? IconName.Check : IconName.Close}
-          className="w-3 h-3"
+          className={`w-2.5 h-2.5 ${viewOptionStates[option.key] ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'}`}
         />
         {option.label}
       </button>
@@ -64,12 +64,12 @@ const ViewOptionsToggle = ({
     <div
       className={classNames(
         "ViewOptionsToggle",
-        "z-20 p-1 bg-menu rounded-sm border border-tab-inactive/30 shadow-sm",
+        "z-20 p-1.5 bg-white dark:bg-gray-900 rounded-sm border border-tab-inactive/30 shadow-sm text-[11px]",
         className
       )}
       onClick={preventPropagation}
     >
-      <div className="flex gap-2">
+      <div className="flex gap-3">
         <ul className="flex-1 flex flex-col gap-0.5">
           {currentViewOptions.map(renderOptionButton)}
         </ul>

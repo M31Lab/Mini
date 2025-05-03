@@ -76,14 +76,15 @@ const CodeBlockActionsButton = ({
     rounded-sm
     text-[9px]
     pointer-events-auto
-    bg-[rgba(0,0,0,0.03)]
-    dark:bg-[rgba(255,255,255,0.03)]
-    hover:bg-[rgba(0,0,0,0.07)]
-    dark:hover:bg-[rgba(255,255,255,0.07)]
-    text-gray-600
-    dark:text-gray-300
-    border border-tab-inactive/30
-    ${showSuccess ? "text-green-500 border-green-500" : ""}
+    bg-[rgba(0,0,0,0.01)]
+    dark:bg-[rgba(255,255,255,0.01)]
+    hover:bg-[rgba(0,0,0,0.03)]
+    dark:hover:bg-[rgba(255,255,255,0.03)]
+    text-gray-500
+    dark:text-gray-400
+    border border-tab-inactive/20
+    transition-colors
+    ${showSuccess ? "text-green-500 dark:text-green-400 border-green-500/30" : ""}
   `.trim().replace(/\s+/g, ' ');
 
   return (
@@ -96,12 +97,12 @@ const CodeBlockActionsButton = ({
     >
       {showSuccess ? (
         <>
-          <Icon name={IconName.Check} className="w-3 h-3" />
+          <Icon name={IconName.Check} className="w-2.5 h-2.5" />
           <span>{buttonSuccessText}</span>
         </>
       ) : (
         <>
-          {iconName && <Icon name={IconName[iconName as keyof typeof IconName]} className="w-3 h-3" />}
+          {iconName && <Icon name={IconName[iconName as keyof typeof IconName]} className="w-2.5 h-2.5" />}
           <span>{buttonText}</span>
         </>
       )}

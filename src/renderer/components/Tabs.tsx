@@ -21,16 +21,15 @@ function TabCloseButton({
   return (
     <button
       className={classNames(
-        "ml-1 p-0.5 group-hover:opacity-100 group-focus-within:opacity-100 focus:outline-none hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] rounded-sm",
+        "ml-1 p-0.5 group-hover:opacity-100 group-focus-within:opacity-100 focus:outline-none hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] rounded-sm transition-colors",
         location.pathname === path ? "opacity-100" : "opacity-0"
       )}
       onClick={(e) => {
         e.preventDefault();
-
         onClick(e);
       }}
     >
-      <Icon name={IconName.Close} className="w-3 h-3" />
+      <Icon name={IconName.Close} className="w-2.5 h-2.5 text-gray-500 dark:text-gray-400" />
       <span className="sr-only">Close tab</span>
     </button>
   );
@@ -51,29 +50,28 @@ function TabLink({
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const location = useLocation();
+  const isActive = location.pathname === `/chat/${encodeURI(tab.id)}`;
 
   return (
     <li key={tab.id}>
       <Link
         className={classNames(
-          "h-full flex items-center group whitespace-nowrap text-[9px] focus:outline-none focus:underline",
-          location.pathname === `/chat/${encodeURI(tab.id)}`
-            ? "bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] focus-within:bg-[rgba(0,0,0,0.03)] dark:focus-within:bg-[rgba(255,255,255,0.03)]"
-            : "bg-transparent hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] focus-within:bg-[rgba(0,0,0,0.02)] dark:focus-within:bg-[rgba(255,255,255,0.02)]"
+          "h-full flex items-center group whitespace-nowrap text-[10px] focus:outline-none",
+          isActive
+            ? "bg-[rgba(0,0,0,0.02)] dark:bg-[rgba(255,255,255,0.02)]"
+            : "bg-transparent hover:bg-[rgba(0,0,0,0.01)] dark:hover:bg-[rgba(255,255,255,0.01)]",
+          "transition-colors"
         )}
         to={tab.href}
-        aria-current={
-          location.pathname === `/chat/${encodeURI(tab.id)}`
-            ? "page"
-            : undefined
-        }
+        aria-current={isActive ? "page" : undefined}
       >
         <span
           className={classNames(
             "flex items-center gap-x-1 py-1 pl-2 pr-1",
-            location.pathname === `/chat/${encodeURI(tab.id)}`
-              ? "text-gray-800 dark:text-gray-200 hover:text-gray-800 dark:hover:text-gray-200 focus-within:text-gray-800 dark:focus-within:text-gray-200"
-              : "text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 focus-within:text-gray-600 dark:focus-within:text-gray-300"
+            isActive
+              ? "text-gray-700 dark:text-gray-300"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-600 dark:hover:text-gray-300",
+            isActive ? "border-l-[2px] border-l-gray-400/40 pl-[7px]" : "border-l-[2px] border-l-transparent"
           )}
         >
           <span className="pt-0.5">{tab.name}</span>
@@ -191,162 +189,93 @@ export default function Tabs({
       i++;
     }
 
-    const newConversation = {
+    const newConversation: Conversation = {
       id: `${title}-${Date.now()}`,
       title,
       messages: [],
       inProgress: false,
       createdAt: Date.now(),
       model: currentConversation.model,
+      verbosity: settings?.verbosity ?? currentConversation.verbosity ?? Verbosity.normal,
       autoscroll: true,
-      verbosity:
-        settings?.verbosity ??
-        currentConversation?.verbosity ??
-        Verbosity.normal,
       tools: {},
-    } as Conversation;
+    };
 
+    // add the new conversation to the store
     dispatch(addConversation(newConversation));
 
-    // switch to the new conversation
+    // navigate to the new conversation
     navigate(`/chat/${encodeURI(newConversation.id)}`);
+  };
 
-    // scroll all the way to the right on delay to allow the tab to render
-    setTimeout(() => {
-      if (tabListRef.current) {
-        tabListRef.current.scrollLeft = tabListRef.current.scrollWidth;
-      }
-    }, 100);
+  const isTabsOverflowingX = () => {
+    if (!tabListRef?.current) { return false; }
+
+    return tabListRef.current.scrollWidth > tabListRef.current.clientWidth;
   };
 
   return (
-    <>
-      {/* Tab layout specifically for a skinny UI (switches to dropdown) or when the tab count exceeds 5 */}
-      <div className={`${tabs.length > 5 ? "" : "2xs:hidden"}`}>
-        <label htmlFor="tabs" className="sr-only">
-          Select a tab
-        </label>
-        <div className="flex flex-row divide-x divide-tab-inactive/20 border-b border-tab-inactive/30">
-          <TabsDropdown
-            tabs={tabs}
-            currentConversation={currentConversation}
-            conversationList={conversationList}
-            navigate={navigate}
-            createNewConversation={createNewConversation}
-            className="flex-grow"
-          />
-          {/* button for new chat */}
-          <button
-            className="flex gap-x-1 items-center bg-transparent text-gray-600 dark:text-gray-300 hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] whitespace-nowrap p-1 pr-2 text-[9px]"
-            onClick={createNewConversation}
-          >
-            <Icon name={IconName.Plus} className="w-3 h-3" />
-            New
-          </button>
-        </div>
-      </div>
-      {/* Wider tab layout */}
-      <div className={`${tabs.length > 5 ? "hidden" : "hidden 2xs:block"}`}>
-        <nav className="flex justify-between border-b border-tab-inactive/30">
+    <div className="flex flex-col h-9">
+      <div className="flex items-center justify-between border-b border-tab-inactive/30 h-full">
+        <div className="flex h-full overflow-x-auto no-scrollbar z-10 relative">
           <ul
+            className="flex border-r border-tab-inactive/30 text-[11px] font-thin h-full"
             ref={tabListRef}
-            className="flex overflow-x-auto divide-x divide-tab-inactive/20"
-            aria-label="Tabs"
           >
-            {/* /api */}
-            <li>
-              <Link
-                className={classNames(
-                  "h-full flex items-center gap-x-1 py-1 pl-2 pr-1 group whitespace-nowrap text-[9px] focus:outline-none",
-                  location.pathname === "/api"
-                    ? "bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] text-gray-800 dark:text-gray-200 hover:text-gray-800 dark:hover:text-gray-200 focus-within:text-gray-800 dark:focus-within:text-gray-200 focus-within:bg-[rgba(0,0,0,0.03)] dark:focus-within:bg-[rgba(255,255,255,0.03)]"
-                    : "bg-transparent hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] hover:text-gray-600 dark:hover:text-gray-300 text-gray-500 dark:text-gray-400 focus-within:text-gray-600 dark:focus-within:text-gray-300 focus-within:bg-[rgba(0,0,0,0.02)] dark:focus-within:bg-[rgba(255,255,255,0.02)]",
-                  {
-                    hidden: !showLocalLlmTab,
-                  }
-                )}
-                to="/api"
-                aria-current={location.pathname === "/api" ? "page" : undefined}
-              >
-                <span className="pt-0.5">
-                  ⚙️ LLM Settings
-                </span>
-                <TabCloseButton
-                  path="/api"
-                  onClick={() => {
-                    // If there's no conversations, create a new one
-                    if (conversationList.length === 0) {
-                      createNewConversation();
-                    }
-
-                    // Navigate to the first conversation
-                    navigate(`/chat/${encodeURI(conversationList[0].id)}`);
-
-                    // Hide the tab
-                    setShowLocalLlmTab(false);
-                  }}
-                />
-              </Link>
-            </li>
-            {/* /actions */}
-            <li>
-              <Link
-                className={classNames(
-                  "h-full flex items-center gap-x-1 py-1 pl-2 pr-1 group whitespace-nowrap text-[9px] focus:outline-none",
-                  location.pathname === "/actions"
-                    ? "bg-[rgba(0,0,0,0.03)] dark:bg-[rgba(255,255,255,0.03)] text-gray-800 dark:text-gray-200 hover:text-gray-800 dark:hover:text-gray-200 focus-within:text-gray-800 dark:focus-within:text-gray-200 focus-within:bg-[rgba(0,0,0,0.03)] dark:focus-within:bg-[rgba(255,255,255,0.03)]"
-                    : "bg-transparent hover:bg-[rgba(0,0,0,0.02)] dark:hover:bg-[rgba(255,255,255,0.02)] hover:text-gray-600 dark:hover:text-gray-300 text-gray-500 dark:text-gray-400 focus-within:text-gray-600 dark:focus-within:text-gray-300 focus-within:bg-[rgba(0,0,0,0.02)] dark:focus-within:bg-[rgba(255,255,255,0.02)]",
-                  {
-                    hidden: !showActionsTab,
-                  }
-                )}
-                to="/actions"
-                aria-current={
-                  location.pathname === "/actions" ? "page" : undefined
-                }
-              >
-                <span className="pt-0.5">🛠️ Actions</span>
-                <TabCloseButton
-                  path="/actions"
-                  onClick={() => {
-                    // If there's no conversations, create a new one
-                    if (conversationList.length === 0) {
-                      createNewConversation();
-                    }
-
-                    // Navigate to the first conversation
-                    navigate(`/chat/${encodeURI(conversationList[0].id)}`);
-
-                    // Hide the tab
-                    setShowActionsTab(false);
-                  }}
-                />
-              </Link>
-            </li>
-            {/* Chats */}
-            {tabs &&
-              tabs.map((tab) => (
-                <TabLink
-                  key={tab.id}
-                  tab={tab}
-                  conversationList={conversationList}
-                  currentConversation={currentConversation}
-                  createNewConversation={createNewConversation}
-                />
-              ))}
-            {/* create new chat button */}
-            <li className="flex items-center sticky right-0">
+            {tabs.map((tab) => (
+              <TabLink
+                key={tab.id}
+                tab={tab}
+                conversationList={conversationList}
+                currentConversation={currentConversation}
+                createNewConversation={createNewConversation}
+              />
+            ))}
+            <li className="flex items-center">
               <button
-                className="flex gap-x-1 bg-transparent text-gray-600 dark:text-gray-300 whitespace-nowrap py-1 pl-2 pr-2 text-[9px] hover:bg-[rgba(0,0,0,0.05)] dark:hover:bg-[rgba(255,255,255,0.05)] focus:outline-none"
+                className="h-full flex items-center p-1 text-gray-500 dark:text-gray-400 hover:bg-[rgba(0,0,0,0.01)] dark:hover:bg-[rgba(255,255,255,0.01)] hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                 onClick={createNewConversation}
+                title="New Chat"
               >
                 <Icon name={IconName.Plus} className="w-3 h-3" />
-                New
+                <span className="sr-only">New Chat</span>
               </button>
             </li>
           </ul>
-        </nav>
+        </div>
+        <div className="flex items-center h-full">
+          <TabsDropdown
+            conversationList={conversationList}
+            createNewConversation={createNewConversation}
+          />
+          <Link
+            to="/api"
+            aria-current={location.pathname === "/api" ? "page" : undefined}
+            className={classNames(
+              "flex h-full items-center gap-1 py-1 px-2 text-[11px] whitespace-nowrap",
+              location.pathname === "/api"
+                ? "text-gray-700 dark:text-gray-300 bg-[rgba(0,0,0,0.02)] dark:bg-[rgba(255,255,255,0.02)]"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-[rgba(0,0,0,0.01)] dark:hover:bg-[rgba(255,255,255,0.01)]",
+              "transition-colors"
+            )}
+          >
+            <span>API</span>
+          </Link>
+          <Link
+            to="/actions"
+            aria-current={location.pathname === "/actions" ? "page" : undefined}
+            className={classNames(
+              "flex h-full items-center gap-1 py-1 px-2 text-[11px] whitespace-nowrap border-l border-tab-inactive/30",
+              location.pathname === "/actions"
+                ? "text-gray-700 dark:text-gray-300 bg-[rgba(0,0,0,0.02)] dark:bg-[rgba(255,255,255,0.02)]"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-[rgba(0,0,0,0.01)] dark:hover:bg-[rgba(255,255,255,0.01)]",
+              "transition-colors"
+            )}
+          >
+            <span>Actions</span>
+          </Link>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
