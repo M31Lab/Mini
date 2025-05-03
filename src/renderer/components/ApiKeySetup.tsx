@@ -403,7 +403,7 @@ const ApiKeySetup = ({ vscode, className }: ApiKeySetupProps): ReactElement => {
             {API_STRINGS.INSTRUCTIONS.INTRO}
           </p>
         </div>
-        
+
         {renderInstructions()}
         {renderApiKeyInput()}
         {renderApiUrlInput()}

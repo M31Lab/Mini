@@ -13,6 +13,7 @@ import { ActionCompleteMessage, ActionErrorMessage, AddErrorMessage, AddMessageM
 
 interface BackendMessenger {
   sendSetViewOptions: (viewOptions: any) => void;
+  sendModelUpdate: (model: Model) => void;
 }
 
 export const useBackendMessageHandler = (backendMessenger: BackendMessenger) => {
@@ -262,14 +263,80 @@ export const useBackendMessageHandler = (backendMessenger: BackendMessenger) => 
       }
       case FrontendMessageType.modelsUpdate: {
         const modelsUpdateData = message as ModelsUpdateMessage;
+        const models = modelsUpdateData.models ?? [];
 
         dispatch(
           setModels({
-            models: modelsUpdateData.models ?? [],
+            models,
           })
         );
 
         dispatch(setReceivedModels(true));
+
+        // Check if we need to select a default model
+        // This fixes the issue where "Select a model first" is shown after setting up OpenRouter
+        const currentConversation = conversationList.find(
+          (conversation) => conversation.id === currentConversationId
+        );
+        
+        // Auto-select a model if there's no model selected or if the current model isn't in the list
+        if (models.length > 0 && 
+            (!currentConversation?.model || 
+             !models.some(model => model.id === currentConversation.model?.id))) {
+          
+          // Try to find a good default model (preferring free models and then popular paid models)
+          const preferredFreeModels = [
+            "deepseek/deepseek-chat-v3-0324:free", 
+            "google/gemini-2.0-flash-exp:free",
+            "google/gemini-pro:free",
+            "google/gemini-1.5-pro:free",
+            "meta/llama-3-8b-instruct:free",
+            "meta/llama-3-70b-instruct:free",
+            "mistralai/mistral-small:free",
+            "mistralai/mistral-tiny:free"
+          ];
+          
+          const preferredPaidModels = [
+            "gpt-4o", "gpt-4-turbo", "gpt-4", 
+            "claude-3-opus", "claude-3-sonnet", 
+            "anthropic/claude-3-opus", "anthropic/claude-3-sonnet"
+          ];
+          
+          let defaultModel = null;
+          
+          // First try to find a free model
+          for (const modelId of preferredFreeModels) {
+            defaultModel = models.find(model => model.id === modelId || model.id.includes(modelId));
+            if (defaultModel) break;
+          }
+          
+          // If no free model found, try to find one of the popular paid models
+          if (!defaultModel) {
+            for (const modelId of preferredPaidModels) {
+              defaultModel = models.find(model => model.id === modelId || model.id.includes(modelId));
+              if (defaultModel) break;
+            }
+          }
+          
+          // If no preferred model found, use the first model
+          if (!defaultModel) {
+            defaultModel = models[0];
+          }
+          
+          // Set the model for the current conversation
+          dispatch(
+            setModel({
+              conversationId: currentConversationId,
+              model: defaultModel,
+            })
+          );
+          
+          // Also send the model update to backend
+          if (defaultModel) {
+            backendMessenger.sendModelUpdate(defaultModel);
+          }
+        }
+        
         break;
       }
       case FrontendMessageType.updateApiKeyStatus: {
