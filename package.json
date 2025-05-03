@@ -2,7 +2,7 @@
   "name": "m31-mini",
   "publisher": "M31Lab",
   "displayName": "M31 Mini",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Production-grade AI coding assistant following M31 Production Ruleset standards.",
   "author": "M31Lab <developers.m31lab@gmail.com>",
   "license": "MIT",
