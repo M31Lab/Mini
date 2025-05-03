@@ -1,0 +1,815 @@
+{
+  "name": "m31-mini",
+  "publisher": "M31Lab",
+  "displayName": "M31 Mini",
+  "version": "1.0.0",
+  "description": "Production-grade AI coding assistant following M31 Production Ruleset standards.",
+  "author": "M31Lab <developers.m31lab@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://m31lab.github.io/mini",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/M31Lab/Mini.git"
+  },
+  "bugs": {
+    "url": "https://github.com/M31Lab/Mini/issues"
+  },
+  "icon": "images/m31icon.png",
+  "galleryBanner": {
+    "color": "#1E1E1E",
+    "theme": "dark"
+  },
+  "engines": {
+    "vscode": "^1.70.0",
+    "node": ">=20.0.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Machine Learning",
+    "Snippets",
+    "Education"
+  ],
+  "keywords": [
+    "ai",
+    "codegen",
+    "m31",
+    "autocompletion",
+    "refactoring"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/entry-point.js",
+  "contributes": {
+    "menus": {
+      "editor/context": [
+        {
+          "group": "chatGpt",
+          "when": "editorHasSelection",
+          "submenu": "vscode-chatgpt.subMenu"
+        },
+        {
+          "command": "vscode-chatgpt.acceptSuggestion",
+          "group": "chatGpt",
+          "when": "editorTextFocus"
+        }
+      ],
+      "vscode-chatgpt.subMenu": [
+        {
+          "command": "vscode-chatgpt.generateCode",
+          "group": "1_code_generation@1",
+          "when": "editorHasSelection && generateCode-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.completeCode",
+          "group": "1_code_generation@2",
+          "when": "editorHasSelection && completeCode-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.optimize",
+          "group": "2_code_improvement@1",
+          "when": "editorHasSelection && optimize-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.findProblems",
+          "group": "2_code_improvement@2",
+          "when": "editorHasSelection && findProblems-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.addComments",
+          "group": "2_code_improvement@3",
+          "when": "editorHasSelection && addComments-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.explain",
+          "group": "3_code_understanding@1",
+          "when": "editorHasSelection && explain-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.addTests",
+          "group": "4_testing@1",
+          "when": "editorHasSelection && addTests-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.adhoc",
+          "group": "5_custom@1",
+          "when": "editorHasSelection && adhoc-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.customPrompt1",
+          "group": "5_custom@2",
+          "when": "editorHasSelection && customPrompt1-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.customPrompt2",
+          "group": "5_custom@3",
+          "when": "editorHasSelection && customPrompt2-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.customPrompt3",
+          "group": "5_custom@4",
+          "when": "editorHasSelection && customPrompt3-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.customPrompt4",
+          "group": "5_custom@5",
+          "when": "editorHasSelection && customPrompt4-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.customPrompt5",
+          "group": "5_custom@6",
+          "when": "editorHasSelection && customPrompt5-enabled"
+        },
+        {
+          "command": "vscode-chatgpt.toggleInlineSuggestions",
+          "group": "6_suggestions@1"
+        },
+        {
+          "command": "vscode-chatgpt.disableInlineSuggestionsForFile",
+          "group": "6_suggestions@2"
+        },
+        {
+          "command": "vscode-chatgpt.configureInlineSuggestions",
+          "group": "6_suggestions@3"
+        }
+      ]
+    },
+    "submenus": [
+      {
+        "id": "vscode-chatgpt.subMenu",
+        "label": "M31 Mini",
+        "group": "chatGpt"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "vscode-chatgpt.generateCode",
+        "key": "ctrl+shift+a",
+        "mac": "cmd+shift+a",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.addTests",
+        "key": "ctrl+k ctrl+shift+1",
+        "mac": "cmd+k cmd+shift+1",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.findProblems",
+        "key": "ctrl+k ctrl+shift+2",
+        "mac": "cmd+k cmd+shift+2",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.optimize",
+        "key": "ctrl+k ctrl+shift+3",
+        "mac": "cmd+k cmd+shift+3",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.explain",
+        "key": "ctrl+k ctrl+shift+4",
+        "mac": "cmd+k cmd+shift+4",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.addComments",
+        "key": "ctrl+k ctrl+shift+5",
+        "mac": "cmd+k cmd+shift+5",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.completeCode",
+        "key": "ctrl+k ctrl+shift+6",
+        "mac": "cmd+k cmd+shift+6",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.adhoc",
+        "key": "ctrl+k ctrl+shift+7",
+        "mac": "cmd+k cmd+shift+7",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.customPrompt1",
+        "key": "ctrl+k ctrl+shift+8",
+        "mac": "cmd+k cmd+shift+8",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.customPrompt2",
+        "key": "ctrl+k ctrl+shift+9",
+        "mac": "cmd+k cmd+shift+9",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "vscode-chatgpt.acceptSuggestionKeybinding",
+        "key": "tab",
+        "when": "editorTextFocus && !editorTabMovesFocus && !inSnippetMode && !suggestWidgetVisible"
+      }
+    ],
+    "commands": [
+      {
+        "command": "vscode-chatgpt.freeText",
+        "title": "M31 Mini: Ask anything"
+      },
+      {
+        "command": "vscode-chatgpt.clearSession",
+        "title": "M31 Mini: Reset session"
+      },
+      {
+        "command": "vscode-chatgpt.generateCode",
+        "title": "M31 Mini: Generate code",
+        "enablement": "editorHasSelection",
+        "icon": "$(code)"
+      },
+      {
+        "command": "vscode-chatgpt.addTests",
+        "title": "%vscode-chatgpt.addTests.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "vscode-chatgpt.findProblems",
+        "title": "%vscode-chatgpt.findProblems.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(issues)"
+      },
+      {
+        "command": "vscode-chatgpt.optimize",
+        "title": "%vscode-chatgpt.optimize.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(rocket)"
+      },
+      {
+        "command": "vscode-chatgpt.explain",
+        "title": "%vscode-chatgpt.explain.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(book)"
+      },
+      {
+        "command": "vscode-chatgpt.addComments",
+        "title": "%vscode-chatgpt.addComments.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(comment)"
+      },
+      {
+        "command": "vscode-chatgpt.completeCode",
+        "title": "%vscode-chatgpt.completeCode.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(wand)"
+      },
+      {
+        "command": "vscode-chatgpt.adhoc",
+        "title": "%vscode-chatgpt.adhoc.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(pencil)"
+      },
+      {
+        "command": "vscode-chatgpt.customPrompt1",
+        "title": "%vscode-chatgpt.customPrompt1.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(star)"
+      },
+      {
+        "command": "vscode-chatgpt.customPrompt2",
+        "title": "%vscode-chatgpt.customPrompt2.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(star)"
+      },
+      {
+        "command": "vscode-chatgpt.customPrompt3",
+        "title": "%vscode-chatgpt.customPrompt3.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(star)"
+      },
+      {
+        "command": "vscode-chatgpt.customPrompt4",
+        "title": "%vscode-chatgpt.customPrompt4.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(star)"
+      },
+      {
+        "command": "vscode-chatgpt.customPrompt5",
+        "title": "%vscode-chatgpt.customPrompt5.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(star)"
+      },
+      {
+        "command": "vscode-chatgpt.customPrompt6",
+        "title": "%vscode-chatgpt.customPrompt6.title%",
+        "enablement": "editorHasSelection",
+        "icon": "$(star)"
+      },
+      {
+        "command": "vscode-chatgpt.clearConversation",
+        "title": "M31 Mini: Clear conversation"
+      },
+      {
+        "command": "vscode-chatgpt.exportConversation",
+        "title": "M31 Mini: Export conversation"
+      },
+      {
+        "command": "vscode-chatgpt.acceptSuggestion",
+        "title": "M31 Mini: Accept Inline Suggestion",
+        "icon": "$(check)"
+      },
+      {
+        "command": "vscode-chatgpt.acceptSuggestionKeybinding",
+        "title": "M31 Mini: Accept Inline Suggestion (Tab)"
+      },
+      {
+        "command": "vscode-chatgpt.toggleInlineSuggestions",
+        "title": "M31 Mini: Toggle Inline Suggestions",
+        "icon": "$(lightbulb)"
+      },
+      {
+        "command": "vscode-chatgpt.disableInlineSuggestionsForFile",
+        "title": "M31 Mini: Disable Inline Suggestions for Current File",
+        "icon": "$(close)"
+      },
+      {
+        "command": "vscode-chatgpt.configureInlineSuggestions",
+        "title": "M31 Mini: Configure Inline Suggestions",
+        "icon": "$(gear)"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "vscode-chatgpt",
+          "title": "M31 Mini",
+          "icon": "images/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "vscode-chatgpt": [
+        {
+          "type": "webview",
+          "id": "vscode-chatgpt.view",
+          "name": "Chat",
+          "title": "M31 Mini",
+          "icon": "images/icon.svg",
+          "contextualTitle": "Chat"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "M31 Mini",
+      "properties": {
+        "chatgpt.gpt3.generateCode-enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the code generation context menu item for the selected comment/code for Codex. Only available with code-* models",
+          "order": 7
+        },
+        "chatgpt.promptPrefix.addTests": {
+          "type": "string",
+          "default": "Implement tests for the following code",
+          "description": "The prompt prefix used for adding tests for the selected code",
+          "order": 8
+        },
+        "chatgpt.promptPrefix.addTests-enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the prompt prefix used for adding tests for the selected code in the context menu",
+          "order": 9
+        },
+        "chatgpt.promptPrefix.findProblems": {
+          "type": "string",
+          "default": "Find problems with the following code",
+          "description": "The prompt prefix used for finding problems for the selected code",
+          "order": 10
+        },
+        "chatgpt.promptPrefix.findProblems-enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the prompt prefix used for finding problems for the selected code in the context menu",
+          "order": 11
+        },
+        "chatgpt.promptPrefix.optimize": {
+          "type": "string",
+          "default": "Optimize the following code",
+          "description": "The prompt prefix used for optimizing the selected code",
+          "order": 12
+        },
+        "chatgpt.promptPrefix.optimize-enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the prompt prefix used for optimizing the selected code in the context menu",
+          "order": 13
+        },
+        "chatgpt.promptPrefix.explain": {
+          "type": "string",
+          "default": "Explain the following code",
+          "description": "The prompt prefix used for explaining the selected code",
+          "order": 14
+        },
+        "chatgpt.promptPrefix.explain-enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the prompt prefix used for explaining the selected code in the context menu",
+          "order": 15
+        },
+        "chatgpt.promptPrefix.addComments": {
+          "type": "string",
+          "default": "Insert code comments into the following code to make the code easier to follow",
+          "description": "The prompt prefix used for adding comments for the selected code",
+          "order": 16
+        },
+        "chatgpt.promptPrefix.addComments-enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the prompt prefix used for adding comments for the selected code in the context menu",
+          "order": 17
+        },
+        "chatgpt.promptPrefix.completeCode": {
+          "type": "string",
+          "default": "Complete the following code",
+          "description": "The prompt prefix used for completing the selected code",
+          "order": 18
+        },
+        "chatgpt.promptPrefix.completeCode-enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the prompt prefix used for completing the selected code in the context menu",
+          "order": 19
+        },
+        "chatgpt.promptPrefix.customPrompt1": {
+          "type": "string",
+          "default": "",
+          "description": "Your custom prompt. It's disabled by default, please set to a custom prompt and enable it if you prefer using customized prompt",
+          "order": 20
+        },
+        "chatgpt.promptPrefix.customPrompt1-enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable the prompt prefix used for your custom prompt. The default value is empty, if you enable this item make sure to set this `chatgpt.promptPrefix.customPrompt1`",
+          "order": 21
+        },
+        "chatgpt.promptPrefix.customPrompt2": {
+          "type": "string",
+          "default": "",
+          "description": "Your custom prompt. It's disabled by default, please set to a custom prompt and enable it if you prefer using customized prompt",
+          "order": 22
+        },
+        "chatgpt.promptPrefix.customPrompt2-enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable the prompt prefix used for your custom prompt. The default value is empty, if you enable this item make sure to set this `chatgpt.promptPrefix.customPrompt2`",
+          "order": 23
+        },
+        "chatgpt.promptPrefix.customPrompt3": {
+          "type": "string",
+          "default": "",
+          "description": "Your custom prompt. It's disabled by default, please set to a custom prompt and enable it if you prefer using customized prompt",
+          "order": 24
+        },
+        "chatgpt.promptPrefix.customPrompt3-enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable the prompt prefix used for your custom prompt. The default value is empty, if you enable this item make sure to set this `chatgpt.promptPrefix.customPrompt3`",
+          "order": 25
+        },
+        "chatgpt.promptPrefix.customPrompt4": {
+          "type": "string",
+          "default": "",
+          "description": "Your custom prompt. It's disabled by default, please set to a custom prompt and enable it if you prefer using customized prompt",
+          "order": 26
+        },
+        "chatgpt.promptPrefix.customPrompt4-enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable the prompt prefix used for your custom prompt. The default value is empty, if you enable this item make sure to set this `chatgpt.promptPrefix.customPrompt4`",
+          "order": 27
+        },
+        "chatgpt.promptPrefix.customPrompt5": {
+          "type": "string",
+          "default": "",
+          "description": "Your custom prompt. It's disabled by default, please set to a custom prompt and enable it if you prefer using customized prompt",
+          "order": 28
+        },
+        "chatgpt.promptPrefix.customPrompt5-enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable the prompt prefix used for your custom prompt. The default value is empty, if you enable this item make sure to set this `chatgpt.promptPrefix.customPrompt5`",
+          "order": 29
+        },
+        "chatgpt.promptPrefix.customPrompt6": {
+          "type": "string",
+          "default": "",
+          "description": "Your custom prompt. It's disabled by default, please set to a custom prompt and enable it if you prefer using customized prompt",
+          "order": 30
+        },
+        "chatgpt.promptPrefix.customPrompt6-enabled": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Enable the prompt prefix used for your custom prompt. The default value is empty, if you enable this item make sure to set this `chatgpt.promptPrefix.customPrompt6`",
+          "order": 31
+        },
+        "chatgpt.promptPrefix.adhoc-enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable the prompt prefix used for adhoc command for the selected code in the context menu",
+          "order": 32
+        },
+        "chatgpt.gpt3.apiBaseUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1",
+          "markdownDescription": "Optional override for the OpenAI API base URL. If you customize it, please make sure you have the same format. e.g. starts with `https://` without a trailing slash. The completions endpoint suffix is added internally, e.g. for reference: `${apiBaseUrl}/completions`",
+          "order": 34
+        },
+        "chatgpt.gpt3.organization": {
+          "type": "string",
+          "markdownDescription": "OpenAI Organization ID. [Documentation](https://platform.openai.com/docs/api-reference/organizations-and-projects-optional).",
+          "order": 35
+        },
+        "chatgpt.gpt3.model": {
+          "type": "string",
+          "enum": [
+            "gpt-4.1",
+            "gpt-4o",
+            "gpt-4o-mini",
+            "gpt-4-turbo",
+            "gpt-4",
+            "gpt-4-32k",
+            "gpt-3.5-turbo"
+          ],
+          "default": "gpt-4.1",
+          "markdownDescription": "OpenAI models to use for your prompts. [Documentation](https://platform.openai.com/docs/models/models). \n\n**If you face 400 Bad Request please make sure you are using the right model for your integration method.**",
+          "order": 36,
+          "enumItemLabels": [
+            "OpenAI GPT-4.1",
+            "OpenAI GPT-4o",
+            "OpenAI GPT-4o Mini",
+            "OpenAI GPT-4 Turbo",
+            "OpenAI GPT-4",
+            "OpenAI GPT-4 32k",
+            "OpenAI GPT-3.5 Turbo"
+          ],
+          "markdownEnumDescriptions": [
+            "The latest high-intelligence model for complex tasks.",
+            "High-intelligence flagship model for complex, multi-step tasks.",
+            "Affordable and intelligent small model for fast, lightweight tasks",
+            "The previous set of high-intelligence models. 3x cheaper than GPT-4. 16x longer inputs than GPT-4.",
+            "The previous set of high-intelligence models. 2x longer inputs than GPT-3",
+            "The previous set of high-intelligence models. This is 4x GPT-4 max length and 8x GPT-3 max length.",
+            "A fast, inexpensive model for simple tasks. gpt-4o-mini should be used instead, it's better and cheaper."
+          ]
+        },
+        "chatgpt.gpt3.maxTokens": {
+          "type": "number",
+          "default": 4096,
+          "deprecationMessage": "This config is now disabled, and likely be removed soon.",
+          "markdownDescription": "THIS CONFIG IS NOW DISABLED, and might be totally removed in the future. If you think this config setting should stay, please comment it in the GitHub repository that you find it useful.",
+          "order": 37
+        },
+        "chatgpt.gpt3.temperature": {
+          "type": "number",
+          "default": 1,
+          "markdownDescription": "What sampling temperature to use. Higher values means the model will take more risks. Try 0.9 for more creative applications, and 0 (argmax sampling) for ones with a well-defined answer.\n\nIt is recommended altering this or top_p but not both. [Documentation](https://platform.openai.com/docs/api-reference/completions/create#completions-create-temperature)",
+          "order": 38
+        },
+        "chatgpt.gpt3.top_p": {
+          "type": "number",
+          "default": 1,
+          "markdownDescription": "An alternative to sampling with temperature, called nucleus sampling, where the model considers the results of the tokens with top_p probability mass. So 0.1 means only the tokens comprising the top 10% probability mass are considered. \n\nIt is recommended altering this or temperature but not both. [Documentation](https://platform.openai.com/docs/api-reference/completions/create#completions-create-top_p)",
+          "order": 39
+        },
+        "chatgpt.response.showNotification": {
+          "type": "boolean",
+          "default": false,
+          "description": "Choose whether you'd like to receive a notification when M31 Mini bot responds to your query."
+        },
+        "chatgpt.response.autoScroll": {
+          "type": "boolean",
+          "default": true,
+          "description": "Whenever there is a new question or response added to the chat, extension will automatically scroll to the bottom. You can change that behavior by disabling this setting.",
+          "order": 41
+        },
+        "chatgpt.systemContext": {
+          "type": "string",
+          "default": "You are M31 Mini helping the User with coding. You are intelligent, helpful and an expert developer, who always gives the correct answer and only does what instructed. If you show code, your response must always be formatted as a proper code block, using the appropriate language identifier.",
+          "description": "System context description. Use this to tell M31 Mini how to respond to the user."
+        },
+        "chatgpt.throttling": {
+          "type": "number",
+          "default": 100,
+          "description": "Stream throttling. Time in milliseconds between UI updates. Higher = ai responds in bigger chunks, but UI is more performant. Lower = ai responds in smaller chunks, but UI will look better, but is less performant. 0 will update the UI with every network request from OpenAI",
+          "order": 43
+        },
+        "chatgpt.minimalUI": {
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, the buttons below the question input field and the chat tab is hidden.",
+          "order": 44
+        },
+        "chatgpt.disableMultipleConversations": {
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, this will disable the ability to have multiple conversations at the same time. This reduces the UI clutter of chat tabs.",
+          "order": 45
+        },
+        "chatgpt.verbosity": {
+          "type": "string",
+          "enum": [
+            "code",
+            "concise",
+            "normal",
+            "full"
+          ],
+          "default": "normal",
+          "description": "How verbose should M31 Mini's response be?",
+          "order": 46,
+          "enumItemLabels": [
+            "Code",
+            "Concise",
+            "Normal",
+            "Full"
+          ],
+          "markdownEnumDescriptions": [
+            "Only replies with code",
+            "Explanations are concise",
+            "Normal explanations",
+            "Detailed, full explanations"
+          ]
+        },
+        "chatgpt.renameTabTitles": {
+          "type": "boolean",
+          "default": true,
+          "description": "If enabled, after the first user message, gpt-4o will be used to rename the tab title.",
+          "order": 47
+        },
+        "chatgpt.showAllModels": {
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, the model select dropdown will show ALL available models returned from the API.",
+          "order": 48
+        },
+        "chatgpt.manualModelInput": {
+          "type": "boolean",
+          "default": false,
+          "description": "If enabled, you can manually input the model name in the model id in the select dropdown. This is required for some APIs, like ollama.",
+          "order": 49
+        },
+        "chatgpt.azureApiVersion": {
+          "type": "string",
+          "default": "2024-02-01",
+          "description": "This is required by Azure's API. It must match the API version the deployment expects.",
+          "order": 50
+        },
+        "chatgpt.response.verbosity": {
+          "type": "string",
+          "enum": [
+            "Low",
+            "Medium",
+            "High"
+          ],
+          "default": "Medium",
+          "description": "How verbose should M31 Mini's response be?"
+        },
+        "chatgpt.inlineSuggestions.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline code suggestions as you type (similar to GitHub Copilot)",
+          "order": 51
+        },
+        "chatgpt.inlineSuggestions.languages": {
+          "type": "array",
+          "default": [
+            "javascript",
+            "typescript",
+            "python",
+            "java",
+            "c",
+            "cpp",
+            "csharp",
+            "go",
+            "ruby",
+            "php",
+            "rust"
+          ],
+          "description": "Languages for which inline suggestions are enabled",
+          "order": 52
+        },
+        "chatgpt.inlineSuggestions.debounceTime": {
+          "type": "number",
+          "default": 500,
+          "description": "Time in milliseconds to wait after typing before showing suggestions",
+          "order": 53
+        }
+      }
+    }
+  },
+  "scripts": {
+    "clean": "rimraf out",
+    "prebuild": "npm run clean",
+    "build": "npm run esbuild-base -- --sourcemap && npm run build-webview",
+    "build:production": "npm run esbuild-base -- --minify && npm run build-webview",
+    "build-webview": "webpack --mode production",
+    "dev": "npm run watch",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "npm run esbuild-base -- --sourcemap --watch",
+    "watch:webview": "webpack --mode development --watch",
+    "esbuild-base": "esbuild ./src/entry-point.ts --bundle --outfile=out/entry-point.js --external:vscode --format=cjs --platform=node",
+    "esbuild-test": "esbuild ./src/test/**/*.ts --bundle --outdir=out/test --external:vscode --external:mocha --external:./reporters/parallel-buffered --external:./worker.js --format=cjs --platform=node",
+    "lint": "eslint src --ext ts,tsx",
+    "lint:fix": "eslint src --ext ts,tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,json,css}\"",
+    "test": "npm run esbuild-test && vscode-test --log=error",
+    "test:coverage": "vscode-test --coverage",
+    "test:watch": "npm run esbuild-test && vscode-test --watch",
+    "package": "npx @vscode/vsce package",
+    "publish": "npx @vscode/vsce publish",
+    "vscode:prepublish": "npm run clean && npm run build:production"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/typography": "^0.5.13",
+    "@types/dompurify": "^3.0.5",
+    "@types/glob": "^8.0.0",
+    "@types/highlight.js": "^10.1.0",
+    "@types/http-server": "^0.12.1",
+    "@types/isomorphic-fetch": "^0.0.36",
+    "@types/marked": "^4.0.8",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^16.18.89",
+    "@types/react": "^18.0.28",
+    "@types/react-dom": "^18.0.11",
+    "@types/react-redux": "^7.1.25",
+    "@types/sanitize-html": "^2.11.0",
+    "@types/uuid": "^9.0.0",
+    "@types/vscode": "1.70.0",
+    "@types/vscode-webview": "^1.57.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "@vscode/vsce": "^2.24.0",
+    "autoprefixer": "^10.4.19",
+    "css-loader": "^7.1.2",
+    "esbuild": "^0.25.0",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "glob": "^8.0.3",
+    "husky": "^9.0.11",
+    "lint-staged": "^15.2.2",
+    "mocha": "^11.1.0",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.38",
+    "postcss-loader": "^8.1.1",
+    "prettier": "^3.2.5",
+    "react-tooltip": "^5.10.0",
+    "rimraf": "^5.0.5",
+    "style-loader": "^4.0.0",
+    "tailwindcss": "^3.4.4",
+    "ts-loader": "^9.4.2",
+    "typescript": "^5.7.3",
+    "webpack": "^5.94.0",
+    "webpack-cli": "^5.0.1"
+  },
+  "dependencies": {
+    "@ai-sdk/azure": "^0.0.45",
+    "@ai-sdk/openai": "^0.0.66",
+    "@headlessui/react": "^2.0.4",
+    "@reduxjs/toolkit": "^1.9.3",
+    "ai": "^3.4.9",
+    "classnames": "^2.3.2",
+    "dompurify": "^3.2.4",
+    "highlight.js": "^11.7.0",
+    "js-tiktoken": "^1.0.12",
+    "ky": "^1.3.0",
+    "lucide-react": "^0.507.0",
+    "marked": "^4.3.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-markdown": "^9.0.1",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.9.0",
+    "sanitize-html": "^2.13.0",
+    "upath": "^2.0.1",
+    "uuid": "^9.0.0",
+    "zod": "^3.23.8"
+  },
+  "resolutions": {
+    "clone-deep": "^4.0.1"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
+  }
+}

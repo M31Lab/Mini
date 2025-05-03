@@ -1,0 +1,28 @@
+# Build output
+out/
+!node_modules/chatgpt/build/index.js
+
+# Distribution & Release
+dist/
+*.vsix
+
+# VS Code Extension Testing
+.vscode-test/
+.vscode-test-web/
+.vscode-test-log.txt
+out/test/
+coverage/
+
+# Logs
+npm-debug.log*
+*.log
+
+# Package manager
+package-lock.json
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Dependencies
+node_modules
